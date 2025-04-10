@@ -34,21 +34,30 @@ class SplashScreen extends StatelessWidget {
                 Spacer(
                   flex: 2,
                 ),
-                Container(
-                  height: 6,
-                  width: MediaQuery.of(context).size.width * .80,
-                  decoration: BoxDecoration(
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: LinearProgressIndicator(
+                    color: Color(0xff670097),
+                    backgroundColor: Color(0xff50C0FF),
+                    minHeight: 10,
                     borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Color(0xff670097),
-                        Color(0xff50C0FF),
-                      ],
-                    ),
                   ),
                 ),
+                // Container(
+                //   height: 6,
+                //   width: MediaQuery.of(context).size.width * .80,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(12),
+                //     gradient: LinearGradient(
+                //       begin: Alignment.centerLeft,
+                //       end: Alignment.centerRight,
+                //       colors: [
+                //         Color(0xff670097),
+                //         Color(0xff50C0FF),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 Spacer(
                   flex: 1,
                 ),

@@ -1,4 +1,6 @@
 import 'package:asoug/modules/auth/screens/sign_up_screen.dart';
+import 'package:asoug/modules/home/screens/home_screens.dart';
+import 'package:asoug/modules/main/main_screen.dart';
 import 'package:asoug/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -143,9 +145,10 @@ class SignInScreen extends StatelessWidget {
                     ),
                     text: controller.isLoading.value ? 'loading'.tr : 'login'.tr,
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        controller.signInEvent();
-                      }
+                      // if (_formKey.currentState!.validate()) {
+                      //   controller.signInEvent();
+                      // }
+                      Get.to(() => MainScreen());
                     },
                     buttonTextStyle: const TextStyle(color: Colors.white),
                     width: MediaQuery.of(context).size.width * .80,
