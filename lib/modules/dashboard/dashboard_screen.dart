@@ -1,9 +1,12 @@
+import 'package:asoug/modules/products/cancelation/cancelation_products_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-import '../return/return_products_screen.dart';
+import '../orders/all_orders_screen.dart';
+import '../products/return/return_products_screen.dart';
+import '../wishList/wish_list_screen.dart';
 
 class UserDashboardScreen extends StatefulWidget {
   const UserDashboardScreen({super.key});
@@ -326,12 +329,15 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
               // if (index == 1) {
               //   Get.to(() => AddressScreen());
               // }
-              // if (index == 2) {
-              //   Get.to(() => AllOrdersScreen());
-              // }
-              // if (index == 5) {
-              //   Get.to(() => WishListScreen());
-              // }
+              if (index == 2) {
+                Get.to(() => AllOrdersScreen());
+              }
+              if (index == 5) {
+                Get.to(() => WishListScreen());
+              }
+              if (index == 4) {
+                Get.to(() => CancellationListScreen());
+              }
               if (index == 3) {
                 Get.to(() => ReturnProductsScreen());
               }

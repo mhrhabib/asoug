@@ -388,12 +388,16 @@ class _SupplierHomePageState extends State<SupplierHomePage> with SingleTickerPr
                 // Send message
               },
               style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Send Message'),
+              child: const Text(
+                'Send Message',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 16),

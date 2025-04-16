@@ -1,4 +1,7 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
+import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
+import 'package:asoug/modules/ourTeam/our_team_screen.dart';
+import 'package:asoug/modules/supplier/supplier_list_screen.dart';
 import 'package:asoug/modules/supplier/suppliers_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,7 +71,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   icon: Icons.category,
                   title: 'Suppliers',
                   onTap: () {
-                    Get.to(() => SupplierHomePage());
+                    Get.to(() => SupplierListScreen());
                     // Navigate to categories
                   },
                 ),
@@ -98,6 +101,24 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     // Navigate to settings
+                  },
+                ),
+                _buildDrawerTile(
+                  context,
+                  icon: Icons.group_add_sharp,
+                  title: 'Our Team',
+                  onTap: () {
+                    Get.to(() => OurTeamScreen());
+                    // Navigate to help
+                  },
+                ),
+                _buildDrawerTile(
+                  context,
+                  icon: Icons.perm_media_outlined,
+                  title: 'Media Center',
+                  onTap: () {
+                    Get.to(() => MediaCenterScreen());
+                    // Navigate to help
                   },
                 ),
                 _buildDrawerTile(
