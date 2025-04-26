@@ -1,3 +1,4 @@
+import 'package:asoug/modules/cart/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -115,8 +116,16 @@ class _CartScreenState extends State<CartScreen> {
             child: Gap(12),
           ),
           SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CouponSection(),
+            ),
+          ),
+          SliverToBoxAdapter(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.to(() => CheckoutScreen());
+              },
               child: Container(
                 padding: EdgeInsets.all(12),
                 margin: EdgeInsets.symmetric(horizontal: 12),
@@ -301,6 +310,62 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CouponSection extends StatelessWidget {
+  final TextEditingController couponController = TextEditingController();
+
+  CouponSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      //padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: TextField(
+              controller: couponController,
+              decoration: InputDecoration(
+                hintText: 'Enter coupon code',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            flex: 1,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFFF6606),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                minimumSize: Size(30, 53),
+              ),
+              onPressed: () {
+                // Apply coupon logic here
+                final coupon = couponController.text;
+                print('Applying coupon: $coupon');
+              },
+              child: Text(
+                'Apply',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

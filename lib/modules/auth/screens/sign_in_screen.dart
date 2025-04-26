@@ -1,3 +1,4 @@
+import 'package:asoug/modules/auth/forgotPassword/forgot_password_screen.dart';
 import 'package:asoug/modules/auth/screens/sign_up_screen.dart';
 import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:asoug/modules/main/main_screen.dart';
@@ -158,7 +159,7 @@ class SignInScreen extends StatelessWidget {
                     margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
                     child: InkWell(
                       onTap: () {
-                        Get.toNamed(AppRoutes.otpSendScreen);
+                        Get.to(() => ForgotPasswordScreen());
                       },
                       child: Text(
                         'forget_password'.tr,

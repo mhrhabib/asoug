@@ -1,11 +1,15 @@
+import 'package:asoug/modules/help&support/help_support_screen.dart';
 import 'package:asoug/modules/products/cancelation/cancelation_products_list_screen.dart';
+import 'package:asoug/modules/queries/queries_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
+import '../address/address_screen.dart';
 import '../orders/all_orders_screen.dart';
 import '../products/return/return_products_screen.dart';
+import '../profile/profile_screen.dart';
 import '../wishList/wish_list_screen.dart';
 
 class UserDashboardScreen extends StatefulWidget {
@@ -323,17 +327,23 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () {
-              // if (index == 0) {
-              //   Get.to(() => ProfileScreen());
-              // }
-              // if (index == 1) {
-              //   Get.to(() => AddressScreen());
-              // }
+              if (index == 0) {
+                Get.to(() => ProfileScreen());
+              }
+              if (index == 1) {
+                Get.to(() => AddressScreen());
+              }
               if (index == 2) {
                 Get.to(() => AllOrdersScreen());
               }
               if (index == 5) {
                 Get.to(() => WishListScreen());
+              }
+              if (index == 6) {
+                Get.to(() => QueriesScreen());
+              }
+              if (index == 7) {
+                Get.to(() => HelpSupportScreen());
               }
               if (index == 4) {
                 Get.to(() => CancellationListScreen());
