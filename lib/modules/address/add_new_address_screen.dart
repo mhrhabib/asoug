@@ -1,95 +1,280 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import '../../core/common/widgets/custom_text_form_field.dart';
+import 'package:get/get.dart';
 
 class AddNewAddressScreen extends StatefulWidget {
-  const AddNewAddressScreen({super.key});
+  final Map<String, String>? address; // For editing existing address
+
+  const AddNewAddressScreen({super.key, this.address});
 
   @override
   State<AddNewAddressScreen> createState() => _AddNewAddressScreenState();
 }
 
 class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _address1Controller;
+  late TextEditingController _address2Controller;
+  late TextEditingController _countryController;
+  late TextEditingController _stateController;
+  late TextEditingController _cityController;
+  late TextEditingController _zipController;
+  bool _isDefault = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final address = widget.address;
+    _nameController = TextEditingController(text: address?['name'] ?? '');
+    _emailController = TextEditingController(text: address?['email'] ?? '');
+    _phoneController = TextEditingController(text: address?['phone'] ?? '');
+    _address1Controller = TextEditingController(text: address?['address1'] ?? '');
+    _address2Controller = TextEditingController(text: address?['address2'] ?? '');
+    _countryController = TextEditingController(text: address?['country'] ?? '');
+    _stateController = TextEditingController(text: address?['state'] ?? '');
+    _cityController = TextEditingController(text: address?['city'] ?? '');
+    _zipController = TextEditingController(text: address?['zip'] ?? '');
+    _isDefault = address?['isDefault'] == 'true';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _address1Controller.dispose();
+    _address2Controller.dispose();
+    _countryController.dispose();
+    _stateController.dispose();
+    _cityController.dispose();
+    _zipController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final buttonWidth = screenWidth * 0.9;
+    final isEditing = widget.address != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Address'),
+        title: Text(
+          isEditing ? 'Edit Address' : 'Add New Address',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
         actions: [
-          SvgPicture.asset('assets/icons/settings.svg'),
-          Gap(12),
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/icons/settings.svg',
+              width: 24,
+            ),
+            onPressed: () {},
+          ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            LabeledTextField(label: 'Name', hintText: 'name'),
-            LabeledTextField(label: 'Email', hintText: 'email'),
-            LabeledTextField(label: 'Phone', hintText: 'phone'),
-            LabeledTextField(label: 'Address', hintText: 'address'),
-            LabeledTextField(label: 'Address 2', hintText: 'address'),
-            LabeledTextField(label: 'Country', hintText: 'country'),
-            LabeledTextField(label: 'States', hintText: 'states'),
-            LabeledTextField(label: 'City', hintText: 'city'),
-            Gap(12),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildLabeledTextField(
+                label: 'Full Name',
+                controller: _nameController,
+                validator: (value) => value?.isEmpty ?? true ? 'Please enter your name' : null,
+                textInputAction: TextInputAction.next,
+              ),
+              _buildLabeledTextField(
+                label: 'Email',
+                controller: _emailController,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Please enter your email';
+                  if (!value!.contains('@')) return 'Please enter a valid email';
+                  return null;
+                },
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+              ),
+              _buildLabeledTextField(
+                label: 'Phone Number',
+                controller: _phoneController,
+                validator: (value) => value?.isEmpty ?? true ? 'Please enter your phone' : null,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+              ),
+              _buildLabeledTextField(
+                label: 'Address Line 1',
+                controller: _address1Controller,
+                validator: (value) => value?.isEmpty ?? true ? 'Please enter your address' : null,
+                textInputAction: TextInputAction.next,
+              ),
+              _buildLabeledTextField(
+                label: 'Address Line 2 (Optional)',
+                controller: _address2Controller,
+                textInputAction: TextInputAction.next,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildLabeledTextField(
+                      label: 'Country',
+                      controller: _countryController,
+                      validator: (value) => value?.isEmpty ?? true ? 'Please enter country' : null,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  const Gap(12),
+                  Expanded(
+                    child: _buildLabeledTextField(
+                      label: 'State',
+                      controller: _stateController,
+                      validator: (value) => value?.isEmpty ?? true ? 'Please enter state' : null,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildLabeledTextField(
+                      label: 'City',
+                      controller: _cityController,
+                      validator: (value) => value?.isEmpty ?? true ? 'Please enter city' : null,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  const Gap(12),
+                  Expanded(
+                    child: _buildLabeledTextField(
+                      label: 'ZIP Code',
+                      controller: _zipController,
+                      validator: (value) => value?.isEmpty ?? true ? 'Please enter ZIP code' : null,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(12),
+              SwitchListTile(
+                title: const Text('Set as default address'),
+                value: _isDefault,
+                onChanged: (value) {
+                  setState(() {
+                    _isDefault = value;
+                  });
+                },
+                activeColor: Theme.of(context).primaryColor,
+              ),
+              const Gap(24),
+              SizedBox(
+                width: buttonWidth,
+                height: 50,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: _submitAddress,
+                  icon: const Icon(Icons.check, size: 20),
+                  label: Text(
+                    isEditing ? 'Update Address' : 'Save Address',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-              onPressed: () {},
-              label: Text(
-                'Submit',
-                style: TextStyle(color: Colors.white),
-              ),
-              icon: Icon(Icons.check, color: Colors.white),
-            ),
-          ],
+              const Gap(24),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-class LabeledTextField extends StatelessWidget {
-  final String label;
-  final String hintText;
-  final TextEditingController? controller;
-  final bool obscureText;
-  final TextInputType keyboardType;
-  final TextInputAction textInputAction;
-
-  const LabeledTextField({
-    super.key,
-    required this.label,
-    required this.hintText,
-    this.controller,
-    this.obscureText = false,
-    this.keyboardType = TextInputType.text,
-    this.textInputAction = TextInputAction.next,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLabeledTextField({
+    required String label,
+    required TextEditingController controller,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    bool obscureText = false,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label),
-          const SizedBox(height: 8),
-          CustomTextFormField(
-            hintText: hintText,
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+          const Gap(4),
+          TextFormField(
             controller: controller,
             obscureText: obscureText,
-            textInputType: keyboardType,
+            keyboardType: keyboardType,
             textInputAction: textInputAction,
+            decoration: InputDecoration(
+              hintText: 'Enter $label',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+            ),
+            validator: validator,
           ),
         ],
       ),
     );
+  }
+
+  void _submitAddress() {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Process the address data
+      final addressData = {
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+        'address1': _address1Controller.text,
+        'address2': _address2Controller.text,
+        'country': _countryController.text,
+        'state': _stateController.text,
+        'city': _cityController.text,
+        'zip': _zipController.text,
+        'isDefault': _isDefault.toString(),
+      };
+
+      // Here you would typically save the address to your database/backend
+      // For now, we'll just show a success message and go back
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.address != null ? 'Address updated successfully' : 'Address added successfully'),
+        ),
+      );
+      Get.back(result: addressData);
+    }
   }
 }

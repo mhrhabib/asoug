@@ -16,7 +16,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _pinController = TextEditingController();
-  bool _isLoading = false;
+  bool isLoading = false;
   bool _canResend = false;
   int _resendCountdown = 30;
 
@@ -52,13 +52,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   Future<void> _verifyCode() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      setState(() => isLoading = true);
 
       // Simulate API verification
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         // Navigate to next screen or show success
       }
     }

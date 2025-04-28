@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+
 import '../address/add_new_address_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -11,210 +13,198 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  String _selectedPaymentMethod = 'credit_card';
+  bool _showCardDetails = true;
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final buttonWidth = screenWidth * 0.9;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: const Text(
+          'Checkout',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
         actions: [
-          SvgPicture.asset('assets/icons/settings.svg'),
-          Gap(12),
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/icons/settings.svg',
+              width: 24,
+            ),
+            onPressed: () {},
+          ),
         ],
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
-          spacing: 12,
           children: [
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color(0xFFE8F9FF),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Deliver to',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    'New Address',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ],
-              ),
+            // Delivery Address Section
+            _buildSectionHeader(
+              title: 'Deliver to',
+              actionText: 'New Address',
+              onAction: () => Get.to(() => const AddNewAddressScreen()),
             ),
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Jhon Doe',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    'New york USA',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
+            const Gap(8),
+            _buildAddressCard(
+              name: 'John Doe',
+              address: '123 Main Street, New York, USA',
+              isDefault: true,
             ),
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Jhon Smith',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    'Riyadh Saudi Arabia',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
+            const Gap(8),
+            _buildAddressCard(
+              name: 'John Smith',
+              address: '456 King Fahd Road, Riyadh, Saudi Arabia',
+              isDefault: false,
             ),
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color(0xFFE8F9FF),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Payment Method',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+            const Gap(16),
+
+            // Payment Method Section
+            _buildSectionHeader(title: 'Payment Method'),
+            const Gap(8),
+            _buildPaymentMethodSelector(),
+            if (_showCardDetails) ...[
+              const Gap(16),
+              _buildCardDetailsForm(),
+            ],
+            const Gap(16),
+
+            // Cart Summary Section
+            _buildSectionHeader(title: 'Cart Summary', backgroundColor: const Color(0xFFFF6606)),
+            const Gap(12),
+            _buildCartSummary(),
+            const Gap(24),
+
+            // Place Order Button
+            SizedBox(
+              width: buttonWidth,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF6606),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ],
-              ),
-            ),
-            PaymentMethodSelector(),
-            LabeledTextField(label: 'Card Number', hintText: 'number'),
-            LabeledTextField(label: 'Expiry Month', hintText: 'month'),
-            LabeledTextField(label: 'Expiry year', hintText: 'year'),
-            LabeledTextField(label: 'CVC', hintText: 'cvc'),
-            Gap(12),
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color(0xFFFF6606),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                'Cart Summary',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  elevation: 0,
+                ),
+                onPressed: _placeOrder,
+                child: Text(
+                  'Place Order',
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Row(
-                spacing: 12,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 8,
-                    children: [
-                      Text('Sub-Total'),
-                      Text('Shipping cost'),
-                      Text('Tax'),
-                      Text('Discount'),
-                      Container(
-                        height: 1,
-                        margin: EdgeInsets.only(left: 12),
-                        width: MediaQuery.sizeOf(context).width * .4,
-                        color: Colors.grey.shade300,
-                      ),
-                      Text('Total'),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 8,
-                    children: [
-                      Text(':SAR. 40.00'),
-                      Text(':SAR. 30.00'),
-                      Text(':SAR. 00.00'),
-                      Text(':SAR. 00.00'),
-                      Container(
-                        height: 1,
-                        margin: EdgeInsets.only(left: 12),
-                        width: MediaQuery.sizeOf(context).width * .4,
-                        color: Colors.grey.shade300,
-                      ),
-                      Text('SAR. 40.00'),
-                    ],
-                  ),
-                ],
-              ),
+            const Gap(24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader({
+    required String title,
+    String? actionText,
+    VoidCallback? onAction,
+    Color backgroundColor = const Color(0xFFE8F9FF),
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
-            Container(
-              padding: EdgeInsets.all(12),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color(0xFFFF6606),
-                borderRadius: BorderRadius.circular(5),
-              ),
+          ),
+          if (actionText != null)
+            GestureDetector(
+              onTap: onAction,
               child: Text(
-                'Place Order',
+                actionText,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  color: backgroundColor == const Color(0xFFE8F9FF) ? Colors.orange : Colors.white,
                 ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressCard({
+    required String name,
+    required String address,
+    required bool isDefault,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        // Handle address selection
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                if (isDefault)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.green),
+                    ),
+                    child: Text(
+                      'Default',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green[800],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const Gap(4),
+            Text(
+              address,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
               ),
             ),
           ],
@@ -222,53 +212,211 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
+
+  Widget _buildPaymentMethodSelector() {
+    return Column(
+      children: [
+        RadioListTile<String>(
+          title: const Text('Cash on Delivery'),
+          value: 'cash_on_delivery',
+          groupValue: _selectedPaymentMethod,
+          onChanged: (value) {
+            setState(() {
+              _selectedPaymentMethod = value!;
+              _showCardDetails = false;
+            });
+          },
+          contentPadding: EdgeInsets.zero,
+        ),
+        RadioListTile<String>(
+          title: const Text('Credit Card'),
+          value: 'credit_card',
+          groupValue: _selectedPaymentMethod,
+          onChanged: (value) {
+            setState(() {
+              _selectedPaymentMethod = value!;
+              _showCardDetails = true;
+            });
+          },
+          contentPadding: EdgeInsets.zero,
+        ),
+        RadioListTile<String>(
+          title: const Text('Bank Transfer'),
+          value: 'bank_transfer',
+          groupValue: _selectedPaymentMethod,
+          onChanged: (value) {
+            setState(() {
+              _selectedPaymentMethod = value!;
+              _showCardDetails = false;
+            });
+          },
+          contentPadding: EdgeInsets.zero,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCardDetailsForm() {
+    return Column(
+      children: [
+        _buildLabeledTextField(
+          label: 'Card Number',
+          hintText: '1234 5678 9012 3456',
+          keyboardType: TextInputType.number,
+        ),
+        const Gap(12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildLabeledTextField(
+                label: 'Expiry Month',
+                hintText: 'MM',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            const Gap(12),
+            Expanded(
+              child: _buildLabeledTextField(
+                label: 'Expiry Year',
+                hintText: 'YYYY',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            const Gap(12),
+            Expanded(
+              child: _buildLabeledTextField(
+                label: 'CVC',
+                hintText: '123',
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLabeledTextField({
+    required String label,
+    required String hintText,
+    TextInputType? keyboardType,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+        const Gap(4),
+        TextField(
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+          keyboardType: keyboardType,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCartSummary() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          _buildSummaryRow(label: 'Sub-Total', value: 'SAR 40.00'),
+          _buildSummaryRow(label: 'Shipping cost', value: 'SAR 30.00'),
+          _buildSummaryRow(label: 'Tax', value: 'SAR 0.00'),
+          _buildSummaryRow(label: 'Discount', value: '-SAR 0.00'),
+          Divider(
+            height: 24,
+            thickness: 1,
+            color: Colors.grey.shade300,
+          ),
+          _buildSummaryRow(
+            label: 'Total',
+            value: 'SAR 70.00',
+            isTotal: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow({
+    required String label,
+    required String value,
+    bool isTotal = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              color: isTotal ? const Color(0xFFFF6606) : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _placeOrder() {
+    // Handle place order logic
+    Get.offAll(() => OrderConfirmationScreen()); // Navigate to confirmation screen
+  }
 }
 
-class PaymentMethodSelector extends StatefulWidget {
-  const PaymentMethodSelector({super.key});
-
-  @override
-  PaymentMethodSelectorState createState() => PaymentMethodSelectorState();
-}
-
-class PaymentMethodSelectorState extends State<PaymentMethodSelector> {
-  String _selectedPaymentMethod = 'credit_card'; // Default selected value
+class OrderConfirmationScreen extends StatelessWidget {
+  const OrderConfirmationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        RadioListTile<String>(
-          title: Text('Cash on Delivery'),
-          value: 'cash_on_delivery',
-          groupValue: _selectedPaymentMethod,
-          onChanged: (String? value) {
-            setState(() {
-              _selectedPaymentMethod = value!;
-            });
-          },
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.check_circle, size: 80, color: Colors.green),
+            const Gap(20),
+            const Text(
+              'Order Placed Successfully!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const Gap(20),
+            ElevatedButton(
+              onPressed: () => Get.offAllNamed('/home'),
+              child: const Text('Continue Shopping'),
+            ),
+          ],
         ),
-        RadioListTile<String>(
-          title: Text('Credit Card'),
-          value: 'credit_card',
-          groupValue: _selectedPaymentMethod,
-          onChanged: (String? value) {
-            setState(() {
-              _selectedPaymentMethod = value!;
-            });
-          },
-        ),
-        RadioListTile<String>(
-          title: Text('Bank Transfer'),
-          value: 'bank_transfer',
-          groupValue: _selectedPaymentMethod,
-          onChanged: (String? value) {
-            setState(() {
-              _selectedPaymentMethod = value!;
-            });
-          },
-        ),
-      ],
+      ),
     );
   }
 }

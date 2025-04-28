@@ -15,7 +15,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
+  bool isLoading = false;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -28,13 +28,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Future<void> _resetPassword() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      setState(() => isLoading = true);
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
 
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         _showSuccessDialog();
         // Navigate to login screen or other appropriate screen
       }

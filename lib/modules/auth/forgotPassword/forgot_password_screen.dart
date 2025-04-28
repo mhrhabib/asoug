@@ -14,7 +14,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  bool _isLoading = false;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -24,13 +24,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _sendVerificationCode() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      setState(() => isLoading = true);
 
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
 
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Verification code sent to ${_emailController.text}'),
