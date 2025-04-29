@@ -1,4 +1,5 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
+import 'package:asoug/modules/home/screens/home_landing_screen.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
 import 'package:asoug/modules/supplier/supplier_list_screen.dart';
@@ -53,7 +54,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   icon: Icons.home,
                   title: 'Home',
                   onTap: () {
-                    Navigator.pop(context);
+                    Get.to(() => HomeLandingScreen());
                     // Navigate to home if needed
                   },
                 ),

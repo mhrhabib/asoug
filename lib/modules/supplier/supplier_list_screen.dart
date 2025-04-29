@@ -1,3 +1,4 @@
+import 'package:asoug/modules/supplier/supplier_login_screen.dart';
 import 'package:asoug/modules/supplier/suppliers_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,10 +55,14 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.menu),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor, shape: StadiumBorder()),
+            child: Text(
+              'login',
+              style: TextStyle(color: Colors.white),
+            ),
             onPressed: () {
-              // Open menu
+              Get.to(() => SupplierLoginScreen());
             },
           ),
         ],
