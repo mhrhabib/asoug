@@ -1,30 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import '../../../core/common/widgets/custom_checkbox_button.dart';
 import '../../../core/common/widgets/custom_elevated_button.dart';
-import '../../../core/common/widgets/custom_snackbar.dart';
 import '../../../core/common/widgets/custom_text_form_field.dart';
-import '../../../core/common/widgets/validation_function.dart';
 import '../controller/auth_controller.dart';
 
-class CustomerRegisterForm extends StatefulWidget {
+class CustomerRegisterForm extends StatelessWidget {
   CustomerRegisterForm({super.key});
 
-  @override
-  State<CustomerRegisterForm> createState() => _CustomerRegisterFormState();
-}
-
-class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
   final _formKey = GlobalKey<FormState>();
-
-  final authController = Get.put(AuthController());
-
-  // final globalController = Get.put(GlobalController());
-
-  String? selectedValue;
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +30,12 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
               child: CustomTextFormField(
                 controller: authController.name,
                 hintText: 'username'.tr,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  return null;
+                },
               ),
             ),
           ),
@@ -55,6 +49,16 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
               child: CustomTextFormField(
                 controller: authController.phone,
                 hintText: 'mobile_number'.tr,
+                textInputType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number';
+                  }
+                  if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+                    return 'Please enter a valid 10-digit phone number';
+                  }
+                  return null;
+                },
               ),
             ),
           ),
@@ -66,78 +70,83 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: CustomTextFormField(
-                controller: authController.email,
+                controller: authController.regEmail,
                 hintText: "email".tr,
-                suffix: Icon(Icons.email_outlined),
+                textInputType: TextInputType.emailAddress,
+                suffix: const Icon(Icons.email_outlined),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
               ),
             ),
           ),
-          // Container(
-          //   margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          //   child: Obx(
-          //     () => globalController.countyLoader.value
-          //         ? SpinKitCircle(
-          //             color: Theme.of(context).primaryColor,
-          //           )
-          //         : CustomDropdown(
-          //             onChanged: (value) {
-          //               var country = globalController.countryList.firstWhere((element) => (isLocaleEng ? element.name! : element.nameAr) == value);
-          //               authController.country.value = country.id!;
-          //             },
-          //             labelText: "country".tr,
-          //             hintText: 'country'.tr,
-          //             value: selectedValue,
-          //             items: globalController.countryList.map((element) => isLocaleEng ? element.name! : element.nameAr!).toList(),
-          //           ),
-          //   ),
-          // ),
           _buildPassword(),
           _buildConfirmPassword(),
           Container(
-            padding: EdgeInsets.only(left: 12, right: 12),
+            padding: const EdgeInsets.only(left: 12, right: 12),
             child: Column(
               children: [
                 _buildCheck(),
-                Gap(12),
-                CustomElevatedButton(
-                  buttonStyle: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Theme.of(context).primaryColor),
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                const Gap(12),
+                Obx(
+                  () => CustomElevatedButton(
+                    buttonStyle: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Theme.of(context).primaryColor),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
+                    onPressed: authController.isLoading.value
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              if (authController.accountType.value.isNotEmpty) {
+                                if (authController.isAgree.value) {
+                                  authController.register();
+                                } else {
+                                  Get.snackbar(
+                                    'Error',
+                                    'Please agree to the terms and conditions',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              } else {
+                                Get.snackbar(
+                                  'Error',
+                                  'Please select an account type',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                );
+                              }
+                            }
+                          },
+                    text: authController.isLoading.value ? 'Processing...' : 'register'.tr,
+                    buttonTextStyle: const TextStyle(color: Colors.white),
+                    width: MediaQuery.of(context).size.width * .80,
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      if (authController.type.value != '') {
-                        if (authController.isAgree.value == true) {
-                          authController.signup();
-                        } else {
-                          CustomSnackBar.showCustomErrorToast(title: "Error", message: 'error_agree_terms'.tr);
-                        }
-                      } else {
-                        CustomSnackBar.showCustomErrorToast(title: "Error", message: 'error_select_account_type'.tr);
-                      }
-                    }
-                  },
-                  text: 'register'.tr,
-                  buttonTextStyle: const TextStyle(color: Colors.white),
-                  width: MediaQuery.of(context).size.width * .80,
                 ),
-                Gap(12),
+                const Gap(12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('already_have_an_account'.tr),
-                    Gap(8),
+                    const Gap(8),
                     InkWell(
-                      onTap: () {
-                        //Get.toNamed(AppRoutes.signIn);
-                      },
+                      onTap: () => Get.back(),
                       child: Text(
                         'sign_in'.tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           decoration: TextDecoration.underline,
                           color: Colors.blue,
                           decorationColor: Colors.blue,
@@ -157,17 +166,13 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
   Widget _buildCheck() {
     return Obx(
       () => CustomCheckboxButton(
-          text: "msg_by_signing_up_you_re".tr,
-          isExpandedText: false,
-          value: authController.isAgree.value,
-          onChange: (value) {
-            authController.isAgree.value = value;
-            if (authController.isAgree.value == true) {
-              authController.agreedText.value = "yes";
-            } else {
-              authController.agreedText.value = 'no';
-            }
-          }),
+        text: "msg_by_signing_up_you_re".tr,
+        isExpandedText: false,
+        value: authController.isAgree.value,
+        onChange: (value) {
+          authController.isAgree.value = value;
+        },
+      ),
     );
   }
 
@@ -181,21 +186,21 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
           textInputAction: TextInputAction.done,
           textInputType: TextInputType.visiblePassword,
           suffix: InkWell(
-            onTap: () {
-              authController.visibilityCheck1();
-              print(authController.isVisible1.value);
-            },
+            onTap: authController.visibilityCheck1,
             child: Icon(
               authController.isVisible1.value ? Icons.visibility_off_outlined : Icons.visibility,
             ),
           ),
           validator: (value) {
-            if (value == null || (!isValidPassword(value, isRequired: true))) {
-              return "err_msg_please_enter_valid_password".tr;
+            if (value == null || value.isEmpty) {
+              return 'Please enter a password';
+            }
+            if (value.length < 6) {
+              return 'Password must be at least 6 characters';
             }
             return null;
           },
-          obscureText: authController.isVisible1.value ? true : false,
+          obscureText: authController.isVisible1.value,
         ),
       ),
     );
@@ -210,19 +215,19 @@ class _CustomerRegisterFormState extends State<CustomerRegisterForm> {
           hintText: "confirm_password".tr,
           textInputAction: TextInputAction.done,
           textInputType: TextInputType.visiblePassword,
-          obscureText: authController.isVisible2.value ? true : false,
+          obscureText: authController.isVisible2.value,
           suffix: InkWell(
-            onTap: () {
-              authController.visibilityCheck2();
-              print(authController.isVisible.value);
-            },
+            onTap: authController.visibilityCheck2,
             child: Icon(
               authController.isVisible2.value ? Icons.visibility_off_outlined : Icons.visibility,
             ),
           ),
           validator: (value) {
-            if (value == null || (!isValidPassword(value, isRequired: true))) {
-              return "err_msg_please_enter_valid_password".tr;
+            if (value == null || value.isEmpty) {
+              return 'Please confirm your password';
+            }
+            if (value != authController.password1.text) {
+              return 'Passwords do not match';
             }
             return null;
           },

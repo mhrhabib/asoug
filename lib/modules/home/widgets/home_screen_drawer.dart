@@ -7,6 +7,8 @@ import 'package:asoug/modules/supplier/suppliers_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/helper/logout_helper.dart';
+
 class HomeScreenWithDrawer extends StatelessWidget {
   const HomeScreenWithDrawer({super.key});
 
@@ -135,10 +137,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   context,
                   icon: Icons.logout,
                   title: 'Logout',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Handle logout
-                  },
+                  onTap: () => LogoutHelper.logout(context),
                 ),
               ],
             ),

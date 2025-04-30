@@ -1,83 +1,58 @@
-import 'package:dio/dio.dart' as dio;
-import 'package:get/get.dart';
-
-import '../../../core/common/widgets/custom_snackbar.dart';
+import 'package:dio/dio.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/urls.dart';
-import '../controller/auth_controller.dart';
-import '../models/register_model.dart';
-import '../models/sign_in_model.dart';
 
 class AuthRepository {
-  Future<SignInModel> signIn({required String email, required String password}) async {
-    var data = {
-      "username": email,
-      "password": password,
-    };
-    print(data);
+  Future<dynamic> login(String email, String password) async {
     try {
-      dio.Response response = await BaseClient.post(url: Urls.loginUrl, payload: data);
-      if (response.statusCode == 200) {
-        return SignInModel.fromJson(response.data);
-      } else if (response.statusCode == 500) {
-        CustomSnackBar.showCustomErrorToast(message: "Server Error");
-        Get.find<AuthController>().isLoading.value = false;
-      } else {
-        Get.find<AuthController>().isLoading.value = false;
-        CustomSnackBar.showCustomErrorToast(message: '${response.data['error']}');
-      }
-      throw "${response.statusCode}";
-    } on dio.DioException catch (err) {
-      throw CustomSnackBar.showCustomErrorToast(message: '${err}');
-    } catch (e) {
-      rethrow;
+      var data = {
+        'email': email,
+        'password': password,
+      };
+      print(data);
+      final response = await BaseClient.post(
+        url: Urls.loginUrl,
+        payload: data,
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
     }
   }
 
-  static Future signUpApiCall({
-    required String name,
-    required String type,
-    required String phone,
-    required String email,
-    required String countryId,
-    required String password,
-    required String confirmPassword,
-    required String agree,
-  }) async {
-    var data = {
-      "type": type,
-      "username": name,
-      "mobile": phone,
-      "agree": agree,
-      "country": countryId,
-      "email": email,
-      "password": password,
-      'password_confirmation': confirmPassword,
-    };
-    print(data);
+  Future<dynamic> register(Map<String, dynamic> payload) async {
     try {
-      dio.Response response = await BaseClient.post(url: Urls.registerUrl, payload: data);
-    } on Exception catch (e) {}
+      final response = await BaseClient.post(
+        url: Urls.registerUrl,
+        payload: payload,
+      );
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
+    }
   }
 
-  //verify email
-  static Future verifyEmail({String? code}) async {
-    var data = {
-      "code": code,
-    };
-    print(data);
+  Future<dynamic> forgotPassword(String email) async {
     try {
-      dio.Response response = await BaseClient.post(url: '', payload: data);
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        Get.find<AuthController>().verifyIsLoading.value = false;
-        CustomSnackBar.showCustomToast(message: response.data['error'].toString());
-        print(response);
-      }
-      throw "${response.statusMessage}";
-    } catch (e) {
-      rethrow;
+      final response = await BaseClient.post(
+        url: Urls.forgotPasswordUrl,
+        payload: {'email': email},
+      );
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
+    }
+  }
+
+  Future<dynamic> logout() async {
+    try {
+      final response = await BaseClient.post(
+        url: Urls.logoutUrl,
+      );
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
     }
   }
 }

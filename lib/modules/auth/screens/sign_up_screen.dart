@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../core/common/widgets/custom_image_view.dart';
 import '../../../core/utils/image_constant.dart';
-import '../../../core/utils/storage.dart';
 import '../controller/auth_controller.dart';
 import '../widgets/customer_register_form.dart';
 
@@ -17,18 +17,15 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final registrationAccountList = const [
-    'Wholesaler',
-    'Company',
+    'Buyer',
+    'Seller',
     'Both',
   ];
 
-  String? selectedAccountType;
-  final authController = Get.put(AuthController());
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
-    print(storage.read('local'));
-    print(isLocaleEng);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -43,10 +40,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Icon(Icons.arrow_back),
+                      onTap: () => Get.back(),
+                      child: const Icon(Icons.arrow_back),
                     ),
                   ),
                 ),
@@ -74,7 +69,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const Gap(12),
                 Align(
-                  alignment: isLocaleEng ? Alignment.centerLeft : Alignment.centerRight,
+                  alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -87,26 +82,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const Gap(12),
-                OverflowBar(
-                  children: registrationAccountList.map((accountType) {
-                    return RadioListTile<String>(
-                      title: Text(
-                        accountType.tr, // Localized account type
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                SizedBox(
+                  height: 60, // Reduced height since items are in one line
+                  width: double.infinity,
+                  child: Obx(
+                    () => SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: registrationAccountList.map((accountType) {
+                          return SizedBox(
+                            width: 120, // Fixed width for each radio tile
+                            child: RadioListTile<String>(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                accountType.tr,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              value: accountType,
+                              groupValue: authController.accountType.value,
+                              onChanged: (value) {
+                                authController.accountType.value = value!;
+                              },
+                            ),
+                          );
+                        }).toList(),
                       ),
-                      value: accountType,
-                      groupValue: selectedAccountType,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedAccountType = value;
-                          authController.type.value = selectedAccountType!;
-                        });
-                      },
-                    );
-                  }).toList(),
+                    ),
+                  ),
                 ),
                 const Gap(16),
                 CustomerRegisterForm(),

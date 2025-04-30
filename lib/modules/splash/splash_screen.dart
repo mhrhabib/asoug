@@ -2,8 +2,24 @@ import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    Future.microtask(() {
+      // Simulate a delay for the splash screen
+      Future.delayed(const Duration(seconds: 3), () {
+        Get.off(() => SignInScreen());
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

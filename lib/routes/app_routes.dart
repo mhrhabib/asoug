@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/auth/bindings/auth_bindings.dart';
+import '../modules/auth/screens/sign_in_screen.dart';
 import '../modules/splash/splash_screen.dart';
 
 class AppRoutes {
@@ -26,6 +28,11 @@ class AppRoutes {
       name: initialRoutes,
       page: () => const SplashScreen(),
       bindings: [],
+    ),
+    GetPage(
+      name: signIn,
+      page: () => SignInScreen(),
+      binding: AuthBinding(),
     ),
   ];
 }

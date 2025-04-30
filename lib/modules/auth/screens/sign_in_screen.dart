@@ -71,7 +71,7 @@ class SignInScreen extends StatelessWidget {
                       ),
                       child: CustomTextFormField(
                         hintText: 'username_email'.tr,
-                        controller: controller.username,
+                        controller: controller.email,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "username_empty_error".tr;
@@ -95,7 +95,7 @@ class SignInScreen extends StatelessWidget {
                           controller: controller.password,
                           suffix: InkWell(
                             onTap: () {
-                              controller.visibilityCheck();
+                              controller.toggleVisibility();
                               print(controller.isVisible.value);
                             },
                             child: Icon(
@@ -137,22 +137,23 @@ class SignInScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  CustomElevatedButton(
-                    buttonStyle: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(Theme.of(context).primaryColor),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      )),
+                  Obx(
+                    () => CustomElevatedButton(
+                      buttonStyle: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll<Color>(Theme.of(context).primaryColor),
+                        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        )),
+                      ),
+                      text: controller.isLoading.value ? 'loading'.tr : 'login'.tr,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          controller.login();
+                        }
+                      },
+                      buttonTextStyle: const TextStyle(color: Colors.white),
+                      width: MediaQuery.of(context).size.width * .80,
                     ),
-                    text: controller.isLoading.value ? 'loading'.tr : 'login'.tr,
-                    onPressed: () {
-                      // if (_formKey.currentState!.validate()) {
-                      //   controller.signInEvent();
-                      // }
-                      Get.to(() => MainScreen());
-                    },
-                    buttonTextStyle: const TextStyle(color: Colors.white),
-                    width: MediaQuery.of(context).size.width * .80,
                   ),
                   Gap(12),
                   Container(
