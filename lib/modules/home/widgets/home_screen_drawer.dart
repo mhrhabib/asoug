@@ -2,8 +2,10 @@ import 'package:asoug/modules/dashboard/dashboard_screen.dart';
 import 'package:asoug/modules/home/screens/home_landing_screen.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
+import 'package:asoug/modules/products/featured_product_screen.dart';
+import 'package:asoug/modules/products/product_details_screen.dart';
+import 'package:asoug/modules/products/product_list_screen.dart';
 import 'package:asoug/modules/supplier/supplier_list_screen.dart';
-import 'package:asoug/modules/supplier/suppliers_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -71,6 +73,15 @@ class HomeScreenWithDrawer extends StatelessWidget {
                 ),
                 _buildDrawerTile(
                   context,
+                  icon: Icons.shopping_cart_outlined,
+                  title: 'Products',
+                  onTap: () {
+                    Get.to(() => ProductListScreen());
+                    // Navigate to products
+                  },
+                ),
+                _buildDrawerTile(
+                  context,
                   icon: Icons.category,
                   title: 'Suppliers',
                   onTap: () {
@@ -94,6 +105,15 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     // Navigate to profile
+                  },
+                ),
+                _buildDrawerTile(
+                  context,
+                  icon: Icons.featured_video_sharp,
+                  title: 'Feature Products',
+                  onTap: () {
+                    Get.to(() => FeaturedProductScreen());
+                    // Navigate to products
                   },
                 ),
                 const Divider(),

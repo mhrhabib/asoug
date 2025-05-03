@@ -179,7 +179,7 @@ class HomeScreen extends StatelessWidget {
                             itemBuilder: (context, index) {
                               return InkWell(
                                   onTap: () {
-                                    Get.to(() => ProductDetailsScreen());
+                                    //Get.to(() => ProductDetailsScreen(product: fashionItems,));
                                   },
                                   child: _buildProductItem(fashionItems[index]));
                             },

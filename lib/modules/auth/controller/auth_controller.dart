@@ -1,6 +1,7 @@
 import 'package:asoug/core/common/widgets/toast.dart';
 import 'package:asoug/modules/auth/models/login_model.dart';
 import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
+import 'package:asoug/modules/home/screens/home_landing_screen.dart';
 import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -45,7 +46,7 @@ class AuthController extends GetxController {
         print(">>>>>>> TOKEN >>>>>>>${storage.read('token')}");
         toast("Login successful", bgColor: Colors.green);
         // Navigate to home screen
-        Get.offAll(() => HomeScreen());
+        Get.offAll(() => HomeLandingScreen());
       } else {
         Get.snackbar(
           'Error',

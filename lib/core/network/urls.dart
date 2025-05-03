@@ -11,4 +11,8 @@ class Urls {
   static const updatePasswordUrl = '$baseUrl/password/update';
   static const updateAvatarUrl = '$baseUrl/avatar/update';
   static const getAddressUrl = '$baseUrl/address';
+
+  //products
+  static const getFeaturedProductsUrl = '$baseUrl/featured-products?per_page=20';
+  static const getProductsUrl = '$baseUrl/products?per_page=20';
 }

@@ -1,9 +1,59 @@
+import 'package:asoug/modules/home/widgets/home_screen_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 
-class HomeLandingScreen extends StatelessWidget {
+class HomeLandingScreen extends StatefulWidget {
   const HomeLandingScreen({super.key});
+
+  @override
+  State<HomeLandingScreen> createState() => _HomeLandingScreenState();
+}
+
+class _HomeLandingScreenState extends State<HomeLandingScreen> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final List<Map<String, String>> serviceItems = [
+    {
+      'imageUrl': 'https://picsum.photos/309',
+      'title': 'Our Executive Service',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/308',
+      'title': 'Global And Local Trade',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/307',
+      'title': 'Export Services',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/306',
+      'title': 'Market Platform',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/306',
+      'title': 'Events & Meetings',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/305',
+      'title': 'Storage Solutions',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/304',
+      'title': 'Logistics Options',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+    {
+      'imageUrl': 'https://picsum.photos/303',
+      'title': 'Payment Solutions',
+      'paragraph': 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -11,15 +61,23 @@ class HomeLandingScreen extends StatelessWidget {
     final isSmallScreen = screenWidth < 600;
 
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Image.asset('assets/logo.png'),
+        ),
         title: const Text('ASOUG'),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
-            onPressed: () {},
+            onPressed: () {
+              scaffoldKey.currentState?.openDrawer();
+            },
           ),
         ],
       ),
+      drawer: HomeScreenWithDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -101,7 +159,6 @@ class HomeLandingScreen extends StatelessWidget {
 
             // Services Section
             Container(
-              //margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 2),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -111,56 +168,24 @@ class HomeLandingScreen extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: Column(
-                children: [
-                  Wrap(
-                    spacing: 20,
-                    runSpacing: 20,
-                    alignment: WrapAlignment.start,
-                    children: [
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/309',
-                        title: 'Our Executive Service',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/308',
-                        title: 'Global And Local Trade',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/307',
-                        title: 'Export Services',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/306',
-                        title: 'Market Platform',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/306',
-                        title: 'Events & Meetings',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/305',
-                        title: 'Storage Solutions',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/304',
-                        title: 'Logistics Options',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                      _buildServiceItem(
-                        imageUrl: 'https://picsum.photos/303',
-                        title: 'Payment Solutions',
-                        paragraph: 'We Provide A Unique Service To Our Customers By Providing A Dedicated Executive Service To Help You With Your Business Needs.',
-                      ),
-                    ],
-                  ),
-                ],
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 20,
+                  childAspectRatio: 0.65,
+                ),
+                itemCount: serviceItems.length,
+                itemBuilder: (context, index) {
+                  final item = serviceItems[index];
+                  return _buildServiceItem(
+                    imageUrl: item['imageUrl']!,
+                    title: item['title']!,
+                    paragraph: item['paragraph']!,
+                  );
+                },
               ),
             ),
 
@@ -338,6 +363,7 @@ class HomeLandingScreen extends StatelessWidget {
           Text(
             paragraph,
             textAlign: TextAlign.start,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontWeight: FontWeight.w400,
             ),
@@ -347,45 +373,7 @@ class HomeLandingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard({required String title, required String description}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF340F6A),
-            ),
-          ),
-          const Gap(10),
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // Widget _buildFeatureCard({required String title, required String description}) {
   Widget _buildTestimonialCard({
     required String name,
     required String role,

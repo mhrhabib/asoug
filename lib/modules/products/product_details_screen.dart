@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
+import 'models/product_model.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key});
+  final Product product;
+
+  const ProductDetailsScreen({super.key, required this.product});
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  //int _selectedImageIndex = 0;
+  int _quantity = 1;
   final List<String> productImages = [
     'https://picsum.photos/505',
     'https://picsum.photos/400',
@@ -16,27 +23,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
     'https://picsum.photos/600',
   ];
 
-  final List<Map<String, dynamic>> relatedProducts = [
-    {
-      'image': 'https://picsum.photos/400',
-      'name': 'Hot Barbecue Sauce',
-      'price': 25.00,
-      'oldPrice': 35.00,
-    },
-    {
-      'image': 'https://picsum.photos/404',
-      'name': 'Smoky BBQ Rub',
-      'price': 18.00,
-      'oldPrice': 25.00,
-    },
-    {
-      'image': 'https://picsum.photos/405',
-      'name': 'BBQ Marinade',
-      'price': 22.00,
-      'oldPrice': 30.00,
-    },
-  ];
-  late TabController _tabController;
   @override
   void initState() {
     super.initState();
@@ -51,6 +37,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    final price = double.tryParse(widget.product.minPrice?.toString() ?? '0') ?? 0;
+    final hasDiscount = widget.product.hasBulkDiscount == 1;
+    final maxPrice = double.tryParse(widget.product.maxPrice?.replaceAll('৳', '').replaceAll(',', '').trim() ?? '0') ?? 0;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
@@ -65,312 +55,189 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
           ),
         ],
       ),
-      body: Column(children: [
-        Expanded(
+      body: Column(
+        children: [
+          Expanded(
             child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Main product image
-              _MainProductImage(images: productImages),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Main product image
+                  _MainProductImage(
+                    images: widget.product.featuredImage != null ? [widget.product.featuredImage!] : productImages,
+                  ),
 
-              // Product details
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Freshly Barbecue Sauce Regular',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '18 oz 12 Pack',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
+                  // Product details
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'SAR. 20.00',
-                          style: TextStyle(
-                            fontSize: 20,
+                          widget.product.name ?? 'No name',
+                          style: const TextStyle(
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'SAR. 40.00',
-                          style: TextStyle(
+                          widget.product.slug?.replaceAll('-', ' ') ?? '',
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
-                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            '50% OFF',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Text(
+                              '৳ ${price.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                              ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        RatingBar.builder(
-                          initialRating: 4.5,
-                          minRating: 1,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          itemSize: 20,
-                          itemBuilder: (context, _) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (rating) {},
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          '4.5',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text(
-                          '(12 Reviews)',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Column(
-                      children: [
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: Theme.of(context).primaryColor,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: Theme.of(context).primaryColor,
-                          tabs: const [
-                            Tab(text: 'Description'),
-                            Tab(text: 'Reviews'),
-                            Tab(text: 'Specifications'),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 200, // Adjust height as needed
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              // Description Tab
-                              const Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text(
-                                  'Our freshly made barbecue sauce is perfect for grilling season. '
-                                  'Made with natural ingredients and no artificial preservatives. '
-                                  'This 12-pack is ideal for restaurants or large families.\n\n'
-                                  'Ingredients: Tomatoes, vinegar, sugar, salt, spices, natural smoke flavor.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    height: 1.5,
-                                  ),
+                            if (hasDiscount) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                '৳ ${maxPrice.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough,
                                 ),
                               ),
-
-                              // Reviews Tab
-                              ListView.builder(
-                                padding: const EdgeInsets.all(16),
-                                itemCount: 5, // Sample reviews count
-                                itemBuilder: (context, index) {
-                                  return _buildReviewItem();
-                                },
-                              ),
-
-                              // Specifications Tab
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
-                                      _SpecificationRow(title: 'Brand', value: 'Freshly'),
-                                      _SpecificationRow(title: 'Weight', value: '18 oz'),
-                                      _SpecificationRow(title: 'Pack Size', value: '12 Pack'),
-                                      _SpecificationRow(title: 'Flavor', value: 'Barbecue'),
-                                      _SpecificationRow(title: 'Shelf Life', value: '12 months'),
-                                      _SpecificationRow(title: 'Country', value: 'Saudi Arabia'),
-                                    ],
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'DISCOUNT',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    _ProductActionBar(),
-                    // Store information section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade200),
-                          bottom: BorderSide(color: Colors.grey.shade200),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/logo.png', // Replace with your logo asset
-                                width: 50,
-                                height: 50,
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            RatingBar.builder(
+                              initialRating: double.tryParse(widget.product.rating ?? '0') ?? 0,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: true,
+                              itemCount: 5,
+                              itemSize: 20,
+                              itemBuilder: (context, _) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
                               ),
-                              const SizedBox(width: 12),
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              onRatingUpdate: (rating) {},
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.product.rating ?? '0.0',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              '(Reviews)',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Column(
+                          children: [
+                            TabBar(
+                              controller: _tabController,
+                              labelColor: Theme.of(context).primaryColor,
+                              unselectedLabelColor: Colors.grey,
+                              indicatorColor: Theme.of(context).primaryColor,
+                              tabs: const [
+                                Tab(text: 'Description'),
+                                Tab(text: 'Reviews'),
+                                Tab(text: 'Specifications'),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 200,
+                              child: TabBarView(
+                                controller: _tabController,
                                 children: [
-                                  Text(
-                                    'Soug Express',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                  // Description Tab
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      widget.product.name ?? 'No description available',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        height: 1.5,
+                                      ),
                                     ),
                                   ),
-                                  SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.star, color: Colors.amber, size: 16),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        '4.8 (1.2k)',
-                                        style: TextStyle(fontSize: 14),
+
+                                  // Reviews Tab
+                                  ListView.builder(
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: 5,
+                                    itemBuilder: (context, index) {
+                                      return _buildReviewItem();
+                                    },
+                                  ),
+
+                                  // Specifications Tab
+                                  const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          _SpecificationRow(title: 'Brand', value: 'N/A'),
+                                          _SpecificationRow(title: 'Category', value: 'N/A'),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
-                              const Spacer(),
-                              TextButton(
-                                onPressed: () {
-                                  // Navigate to store page
-                                },
-                                child: const Text('View Store'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          const Row(
-                            children: [
-                              Icon(Icons.check_circle, color: Colors.green, size: 16),
-                              SizedBox(width: 4),
-                              Text('Verified Store', style: TextStyle(color: Colors.green)),
-                              SizedBox(width: 16),
-                              Icon(Icons.local_shipping, color: Colors.blue, size: 16),
-                              SizedBox(width: 4),
-                              Text('Free Shipping', style: TextStyle(color: Colors.blue)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'You may also like',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            height: 220,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: relatedProducts.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  width: 150,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 120,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          image: DecorationImage(
-                                            image: NetworkImage(relatedProducts[index]['image']),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        relatedProducts[index]['name'],
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'SAR ${relatedProducts[index]['price'].toStringAsFixed(2)}',
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        'SAR ${relatedProducts[index]['oldPrice'].toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                          decoration: TextDecoration.lineThrough,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                        _ProductActionBar(
+                          onAddToCart: () {
+                            // Handle add to cart with _quantity
+                            Get.snackbar(
+                              'Added to Cart',
+                              '${widget.product.name} (Qty: $_quantity)',
+                            );
+                          },
+                          quantity: _quantity,
+                          onQuantityChanged: (newQuantity) {
+                            setState(() {
+                              _quantity = newQuantity;
+                            });
+                          },
+                        ),
+                        // ... rest of your existing widgets
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ))
-      ]),
-      // Bottom action bar
+        ],
+      ),
     );
   }
 
@@ -393,7 +260,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
               ),
               const SizedBox(width: 8),
               const Text(
-                'Mohammed A.',
+                'Customer',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
@@ -411,12 +278,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
           ),
           const SizedBox(height: 8),
           const Text(
-            'Great product! The flavor is amazing and it lasts long. Definitely recommend.',
+            'Great product! Would buy again.',
             style: TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 8),
           const Text(
-            '2 weeks ago',
+            'Recently',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
@@ -528,13 +395,16 @@ class _MainProductImageState extends State<_MainProductImage> {
   }
 }
 
-class _ProductActionBar extends StatefulWidget {
-  @override
-  State<_ProductActionBar> createState() => _ProductActionBarState();
-}
+class _ProductActionBar extends StatelessWidget {
+  final Function() onAddToCart;
+  final int quantity;
+  final Function(int) onQuantityChanged;
 
-class _ProductActionBarState extends State<_ProductActionBar> {
-  int _quantity = 1;
+  const _ProductActionBar({
+    required this.onAddToCart,
+    required this.quantity,
+    required this.onQuantityChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -546,7 +416,6 @@ class _ProductActionBarState extends State<_ProductActionBar> {
       ),
       child: Row(
         children: [
-          // Quantity selector
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
@@ -557,30 +426,25 @@ class _ProductActionBarState extends State<_ProductActionBar> {
                 IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    if (_quantity > 1) {
-                      setState(() {
-                        _quantity--;
-                      });
+                    if (quantity > 1) {
+                      onQuantityChanged(quantity - 1);
                     }
                   },
                 ),
                 Text(
-                  '$_quantity',
+                  '$quantity',
                   style: const TextStyle(fontSize: 18),
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () {
-                    setState(() {
-                      _quantity++;
-                    });
+                    onQuantityChanged(quantity + 1);
                   },
                 ),
               ],
             ),
           ),
           const SizedBox(width: 16),
-          // Add to cart button
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -590,9 +454,7 @@ class _ProductActionBarState extends State<_ProductActionBar> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {
-                // Add to cart functionality
-              },
+              onPressed: onAddToCart,
               child: const Text(
                 'Add to Cart',
                 style: TextStyle(fontSize: 16, color: Colors.white),
