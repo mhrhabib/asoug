@@ -1,18 +1,19 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
-import 'package:asoug/modules/home/screens/home_landing_screen.dart';
+import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
 import 'package:asoug/modules/products/featured_product_screen.dart';
-import 'package:asoug/modules/products/product_details_screen.dart';
 import 'package:asoug/modules/products/product_list_screen.dart';
 import 'package:asoug/modules/supplier/supplier_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/common/global/general_settings_controller.dart';
 import '../../../core/helper/logout_helper.dart';
 
 class HomeScreenWithDrawer extends StatelessWidget {
-  const HomeScreenWithDrawer({super.key});
+  HomeScreenWithDrawer({super.key});
+  final settingsController = Get.put(GeneralSettingsController());
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +36,16 @@ class HomeScreenWithDrawer extends StatelessWidget {
                     color: Colors.white,
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Soug Express',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Obx(() {
+                    if (settingsController.isLoading.value) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return Text(
+                        settingsController.settings.value.data?.appName ?? 'No App Name',
+                        style: TextStyle(color: Colors.white),
+                      );
+                    }
+                  })
                 ],
               ),
             ),
@@ -58,7 +61,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   icon: Icons.home,
                   title: 'Home',
                   onTap: () {
-                    Get.to(() => HomeLandingScreen());
+                    Get.to(() => HomeScreen());
                     // Navigate to home if needed
                   },
                 ),
@@ -165,15 +168,17 @@ class HomeScreenWithDrawer extends StatelessWidget {
 
           // Footer with version info
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Version 1.0.0',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-            ),
-          ),
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (settingsController.isLoading.value) {
+                  return CircularProgressIndicator();
+                } else {
+                  return Text(
+                    "App Version ${settingsController.settings.value.data?.appVersion}",
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  );
+                }
+              })),
         ],
       ),
     );

@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.microtask(() {
       // Simulate a delay for the splash screen
       Future.delayed(const Duration(seconds: 3), () {
-        Get.off(() => HomeLandingScreen());
+        Get.off(() => SignInScreen());
       });
     });
     super.initState();

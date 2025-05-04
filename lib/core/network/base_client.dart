@@ -46,6 +46,7 @@ class BaseClient {
   }
 
   static Future<dynamic> put({url, payload}) async {
+    print(">>>>>>>.${storage.read('token')}");
     var dio = Dio(await getBasseOptions());
     var response = await dio.put(url, data: payload);
     return response;

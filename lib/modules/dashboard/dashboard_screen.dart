@@ -8,6 +8,7 @@ import '../help&support/help_support_screen.dart';
 import '../orders/all_orders_screen.dart';
 import '../products/cancelation/cancelation_products_list_screen.dart';
 import '../products/return/return_products_screen.dart';
+import '../profile/controller/profile_controller.dart';
 import '../profile/profile_screen.dart';
 import '../queries/queries_screen.dart';
 import '../wishList/wish_list_screen.dart';
@@ -20,6 +21,8 @@ class UserDashboardScreen extends StatefulWidget {
 }
 
 class _UserDashboardScreenState extends State<UserDashboardScreen> {
+  final profileController = Get.put(ProfileController());
+
   final orderNameList = [
     'All',
     'confirm',
@@ -115,13 +118,19 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                             color: Colors.grey[600],
                           ),
                         ),
-                        Text(
-                          'Abu Taleb',
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 16 : 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        Obx(() {
+                          if (profileController.isLoading.value) {
+                            return const CircularProgressIndicator();
+                          } else {
+                            return Text(
+                              profileController.profile.value.name ?? 'User',
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 16 : 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            );
+                          }
+                        }),
                       ],
                     ),
                     const Spacer(),

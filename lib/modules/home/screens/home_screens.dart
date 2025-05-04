@@ -1,13 +1,17 @@
+import 'package:asoug/modules/home/repo/brand_repo.dart';
 import 'package:asoug/modules/products/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
+import '../controllers/brand_controller.dart';
 import '../models/list_item.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/home_screen_drawer.dart';
 
 class HomeScreen extends StatelessWidget {
+  final BrandController brandController = Get.put(BrandController(BrandRepo()));
+
   HomeScreen({super.key});
 
   final List<ProductItem> fashionItems = [
@@ -144,14 +148,34 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Gap(12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Brand'),
-                        Text('View all'),
-                      ],
-                    ),
-                    TwoRowListView(items: items),
+                    Obx(() {
+                      if (brandController.isLoading.value) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Text('Brand', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text('View all', style: TextStyle(color: Colors.blue)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            TwoRowListView(
+                              items: brandController.brandList
+                                  .map((e) => ListItem(
+                                        name: e.name ?? '',
+                                        subtitle: '',
+                                        imageUrl: 'https://picsum.photos/seed/${e.id}/50', // Placeholder
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        );
+                      }
+                    }),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       color: Colors.white,

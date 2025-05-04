@@ -14,6 +14,10 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>asoug</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access to take profile photo</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Need photo library access to choose profile photo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

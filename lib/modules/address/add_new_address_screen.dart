@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
+import 'controllers/address_controller.dart';
+
 class AddNewAddressScreen extends StatefulWidget {
   final Map<String, String>? address; // For editing existing address
 
@@ -253,7 +255,6 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
 
   void _submitAddress() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Process the address data
       final addressData = {
         'name': _nameController.text,
         'email': _emailController.text,
@@ -267,14 +268,16 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
         'isDefault': _isDefault.toString(),
       };
 
-      // Here you would typically save the address to your database/backend
-      // For now, we'll just show a success message and go back
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(widget.address != null ? 'Address updated successfully' : 'Address added successfully'),
-        ),
-      );
-      Get.back(result: addressData);
+      final addressController = Get.find<AddressController>();
+
+      if (widget.address != null) {
+        // Editing existing address - you'll need to have the address ID
+        final addressId = int.tryParse(widget.address?['id'] ?? '0') ?? 0;
+        addressController.updateAddress(addressId, addressData);
+      } else {
+        // Adding new address
+        addressController.addAddress(addressData);
+      }
     }
   }
 }

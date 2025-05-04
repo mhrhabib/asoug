@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'controller/profile_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,12 +18,16 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController(text: 'Abu Taleb');
-  final TextEditingController _emailController = TextEditingController(text: 'abu.taleb@example.com');
-  final TextEditingController _phoneController = TextEditingController(text: '+966 50 123 4567');
-  final TextEditingController _currentPasswordController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final _nameController = TextEditingController(text: 'Abu Taleb');
+  final _emailController = TextEditingController(text: 'abu.taleb@example.com');
+  final _phoneController = TextEditingController(text: '+966 50 123 4567');
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  final ProfileController _controller = Get.put(ProfileController());
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
@@ -61,12 +71,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Picture Section
             _buildProfilePictureSection(avatarRadius, cameraIconSize),
-
             const Gap(16),
-
-            // Personal Info Section
             Form(
               key: _formKey,
               child: Column(
@@ -91,10 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-
             const Gap(16),
-
-            // Update Button
             SizedBox(
               width: buttonWidth,
               height: 50,
@@ -117,10 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-
             const Gap(24),
-
-            // Change Password Section
             _buildChangePasswordSection(buttonWidth, isSmallScreen),
           ],
         ),
@@ -137,26 +137,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CircleAvatar(
               radius: avatarRadius,
               backgroundColor: Colors.grey[200],
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(avatarRadius),
-                child: Image.network(
-                  'https://picsum.photos/200',
-                  width: avatarRadius * 2,
-                  height: avatarRadius * 2,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.person,
-                    size: avatarRadius,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
+              child: _selectedImage != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(avatarRadius),
+                      child: Image.file(
+                        _selectedImage!,
+                        width: avatarRadius * 2,
+                        height: avatarRadius * 2,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(avatarRadius),
+                      child: Image.network(
+                        'https://picsum.photos/200',
+                        width: avatarRadius * 2,
+                        height: avatarRadius * 2,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.person,
+                          size: avatarRadius,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
             ),
             Positioned(
               bottom: 0,
@@ -323,30 +333,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _updateProfile() {
+  void _updateProfile() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Save profile changes
+      final success = await _controller.updateProfile(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
+        SnackBar(
+          content: Text(success ? 'Profile updated successfully' : 'Failed to update profile'),
+        ),
       );
     }
   }
 
-  void _changePassword() {
+  void _changePassword() async {
     if (_passwordFormKey.currentState?.validate() ?? false) {
-      // Change password logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed successfully')),
+      final success = await _controller.updatePassword(
+        _newPasswordController.text.trim(),
+        _confirmPasswordController.text.trim(),
       );
-      // Clear password fields
-      _currentPasswordController.clear();
-      _newPasswordController.clear();
-      _confirmPasswordController.clear();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success ? 'Password changed successfully' : 'Failed to change password'),
+        ),
+      );
+
+      if (success) {
+        _currentPasswordController.clear();
+        _newPasswordController.clear();
+        _confirmPasswordController.clear();
+      }
     }
   }
 
   void _changeProfilePicture() {
-    // Implement profile picture change logic
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -357,17 +381,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ListTile(
               leading: const Icon(Icons.camera_alt),
               title: const Text('Take Photo'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                // Implement camera functionality
+                final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                if (pickedFile != null) {
+                  setState(() {
+                    _selectedImage = File(pickedFile.path);
+                  });
+                }
               },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Choose from Gallery'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                // Implement gallery functionality
+                final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                if (pickedFile != null) {
+                  setState(() {
+                    _selectedImage = File(pickedFile.path);
+                  });
+                  final success = await _controller.updateAvatar(_selectedImage!);
+                  if (success) {
+                    print("updated");
+                  } else {
+                    print('not updated');
+                  }
+                }
               },
             ),
           ],

@@ -15,4 +15,22 @@ class Urls {
   //products
   static const getFeaturedProductsUrl = '$baseUrl/featured-products?per_page=20';
   static const getProductsUrl = '$baseUrl/products?per_page=20';
+  //address
+  static const addressUrl = '$baseUrl/address';
+  //brands
+  static const getBrandsUrl = '$baseUrl/top-brands';
+  //settings
+  static const getSettingsUrl = '$baseUrl/general-setting';
+  //cart
+  static const getCartUrl = '$baseUrl/cart';
+  static const addCartUrl = '$baseUrl/cart/';
+  static const cartSummeryUrl = '$baseUrl/cart-summary';
+
+  //coupons
+  static const getCouponsUrl = '$baseUrl/apply-coupon';
+  static const removeCouponsUrl = '$baseUrl/remove-coupon';
+
+  //orders
+  static const getOrdersUrl = '$baseUrl/orders';
+  static const getOrderBuyerUrl = '$baseUrl/orders/buyer';
 }
