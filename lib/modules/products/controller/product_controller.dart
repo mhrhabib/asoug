@@ -1,4 +1,5 @@
 import 'package:asoug/modules/products/repo/product_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/product_model.dart';
 
@@ -67,11 +68,12 @@ class ProductController extends GetxController {
     }
   }
 
-  Future<void> loadMoreProducts() async {
-    if (currentPage.value < totalPages.value && !isLoading.value) {
-      currentPage.value++;
-      await fetchProducts(loadMore: true);
-    }
+  void loadMoreProducts() async {
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    // Fetch next page
+    await fetchProducts();
   }
 
   Future<void> fetchFeaturedProducts() async {

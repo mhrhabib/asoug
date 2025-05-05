@@ -5,7 +5,7 @@ import '../repo/address_repository.dart';
 class AddressController extends GetxController {
   final AddressRepository _repository = AddressRepository();
 
-  RxList<AddressModel> addresses = <AddressModel>[].obs;
+  List<Address> addressModel = <Address>[].obs;
   RxBool isLoading = false.obs;
   RxString errorMessage = ''.obs;
 
@@ -19,7 +19,7 @@ class AddressController extends GetxController {
     try {
       isLoading.value = true;
       final result = await _repository.getAddresses();
-      addresses.assignAll(result);
+      addressModel = result;
       errorMessage.value = '';
     } catch (e) {
       errorMessage.value = e.toString();
@@ -43,13 +43,13 @@ class AddressController extends GetxController {
         'zip_code': addressData['zip'],
         'is_default': addressData['isDefault'] == 'true',
       });
-      // addresses.add(newAddress);
+
       if (response != null) {
         await fetchAddresses();
       }
 
       errorMessage.value = '';
-      Get.back(); // Close add/edit screen
+      Get.back();
       Get.snackbar('Success', 'Address added successfully');
     } catch (e) {
       errorMessage.value = e.toString();
@@ -74,12 +74,11 @@ class AddressController extends GetxController {
         'zip_code': addressData['zip'],
         'is_default': addressData['isDefault'] == 'true',
       });
-      final index = addresses.indexWhere((a) => a.id == id);
-      if (index != -1) {
-        addresses[index] = updatedAddress;
-      }
+
+      await fetchAddresses();
+
       errorMessage.value = '';
-      Get.back(); // Close add/edit screen
+      Get.back();
       Get.snackbar('Success', 'Address updated successfully');
     } catch (e) {
       errorMessage.value = e.toString();
@@ -94,7 +93,7 @@ class AddressController extends GetxController {
       isLoading.value = true;
       final success = await _repository.deleteAddress(id);
       if (success) {
-        addresses.removeWhere((a) => a.id == id);
+        await fetchAddresses();
         Get.snackbar('Success', 'Address deleted successfully');
       }
       errorMessage.value = '';
@@ -111,11 +110,7 @@ class AddressController extends GetxController {
       isLoading.value = true;
       final success = await _repository.setDefaultAddress(id);
       if (success) {
-        // Update all addresses' isDefault status
-        for (var address in addresses) {
-          address.isDefault = address.id == id;
-        }
-        addresses.refresh();
+        await fetchAddresses();
         Get.snackbar('Success', 'Default address updated');
       }
       errorMessage.value = '';

@@ -1,6 +1,9 @@
 import 'package:asoug/modules/home/widgets/home_screen_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+
+import '../controllers/service_controller.dart';
 
 class HomeLandingScreen extends StatefulWidget {
   const HomeLandingScreen({super.key});
@@ -11,6 +14,7 @@ class HomeLandingScreen extends StatefulWidget {
 
 class _HomeLandingScreenState extends State<HomeLandingScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final ServicesController _controller = Get.put(ServicesController());
 
   final List<Map<String, String>> serviceItems = [
     {
@@ -158,36 +162,43 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
             ),
 
             // Services Section
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [Color.fromARGB(255, 175, 146, 219), Color.fromARGB(255, 222, 161, 123)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            Obx(() {
+              final services = _controller.services.value?.data?.data ?? [];
+
+              return Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    colors: [Color.fromARGB(255, 175, 146, 219), Color.fromARGB(255, 222, 161, 123)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
-              ),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
-                  childAspectRatio: 0.65,
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    childAspectRatio: 0.65,
+                  ),
+                  itemCount: services.length + (_controller.isLoadingMore.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index >= services.length) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final service = services[index];
+                    return _buildServiceItem(
+                      imageUrl: service.image ?? '',
+                      title: service.title ?? 'No title',
+                      paragraph: service.description ?? 'No description',
+                    );
+                  },
                 ),
-                itemCount: serviceItems.length,
-                itemBuilder: (context, index) {
-                  final item = serviceItems[index];
-                  return _buildServiceItem(
-                    imageUrl: item['imageUrl']!,
-                    title: item['title']!,
-                    paragraph: item['paragraph']!,
-                  );
-                },
-              ),
-            ),
+              );
+            }),
 
             // About Section
             // Join Team Section
@@ -341,52 +352,6 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Image.network(
-            imageUrl,
-          ),
-          const Gap(10),
-          Text(
-            title,
-            textAlign: TextAlign.start,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            paragraph,
-            textAlign: TextAlign.start,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Widget _buildFeatureCard({required String title, required String description}) {
-  Widget _buildTestimonialCard({
-    required String name,
-    required String role,
-    required String quote,
-    required String description,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 3),
@@ -394,58 +359,34 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const CircleAvatar(
-                radius: 30,
-                backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/1.jpg'),
-              ),
-              const Gap(16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    role,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Gap(20),
-          Text(
-            quote,
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-              fontSize: 16,
+          if (imageUrl.isNotEmpty)
+            Image.network(
+              imageUrl,
+              height: 100,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
             ),
-          ),
           const Gap(10),
           Text(
-            description,
+            title,
+            textAlign: TextAlign.start,
             style: const TextStyle(
-              color: Colors.grey,
+              fontWeight: FontWeight.bold,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          const Gap(20),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {},
-              child: const Text(
-                'Read More',
-                style: TextStyle(color: Color(0xFFFF6606)),
+          const Gap(5),
+          Expanded(
+            child: Text(
+              paragraph,
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
@@ -453,4 +394,85 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
       ),
     );
   }
+}
+
+// Widget _buildFeatureCard({required String title, required String description}) {
+Widget _buildTestimonialCard({
+  required String name,
+  required String role,
+  required String quote,
+  required String description,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 6,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/1.jpg'),
+            ),
+            const Gap(16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  role,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const Gap(20),
+        Text(
+          quote,
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 16,
+          ),
+        ),
+        const Gap(10),
+        Text(
+          description,
+          style: const TextStyle(
+            color: Colors.grey,
+          ),
+        ),
+        const Gap(20),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () {},
+            child: const Text(
+              'Read More',
+              style: TextStyle(color: Color(0xFFFF6606)),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

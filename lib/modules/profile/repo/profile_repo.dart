@@ -36,9 +36,10 @@ class ProfileRepository {
     }
   }
 
-  Future<bool> updatePassword({required String password, required String passwordConfirmation}) async {
+  Future<bool> updatePassword({required String currentPassword, required String password, required String passwordConfirmation}) async {
     try {
       final payload = {
+        "current_password": currentPassword,
         "password": password,
         "password_confirmation": passwordConfirmation,
       };

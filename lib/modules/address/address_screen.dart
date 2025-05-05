@@ -36,7 +36,7 @@ class AddressScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (_controller.isLoading.value && _controller.addresses.isEmpty) {
+        if (_controller.isLoading.value && _controller.addressModel.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -77,9 +77,9 @@ class AddressScreen extends StatelessWidget {
                   onRefresh: _controller.fetchAddresses,
                   child: ListView.builder(
                     physics: const BouncingScrollPhysics(),
-                    itemCount: _controller.addresses.length,
+                    itemCount: _controller.addressModel.length,
                     itemBuilder: (context, index) {
-                      final address = _controller.addresses[index];
+                      final address = _controller.addressModel[index];
                       return AddressCard(
                         address: address,
                         onEdit: () => _editAddress(address),
@@ -125,7 +125,7 @@ class AddressScreen extends StatelessWidget {
     );
   }
 
-  void _editAddress(AddressModel address) {
+  void _editAddress(Address address) {
     Get.to(
       () => AddNewAddressScreen(),
       arguments: {'mode': 'edit', 'address': address},
@@ -153,7 +153,7 @@ class AddressScreen extends StatelessWidget {
 }
 
 class AddressCard extends StatelessWidget {
-  final AddressModel address;
+  final Address address;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onSetDefault;
@@ -169,7 +169,7 @@ class AddressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSmallScreen = MediaQuery.of(context).size.width < 360;
-    final isDefault = address.isDefault ?? false;
+    final isDefault = address.isDefault == 1;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),

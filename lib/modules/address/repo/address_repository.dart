@@ -4,7 +4,7 @@ import '../../../core/network/urls.dart' as network;
 import '../models/address_model.dart';
 
 class AddressRepository {
-  Future<List<AddressModel>> getAddresses() async {
+  Future<List<Address>> getAddresses() async {
     try {
       final response = await BaseClient.get(
         url: network.Urls.addressUrl,
@@ -12,7 +12,7 @@ class AddressRepository {
 
       if (response is Response) {
         final List<dynamic> data = response.data['data'] ?? [];
-        return data.map((json) => AddressModel.fromJson(json)).toList();
+        return data.map((json) => Address.fromJson(json)).toList();
       }
       return [];
     } catch (e) {
@@ -65,9 +65,10 @@ class AddressRepository {
 
   Future<bool> setDefaultAddress(int id) async {
     try {
-      final response = await BaseClient.post(
-        url: '${network.Urls.addressUrl}/$id/set-default',
-      );
+      var data = {
+        'is_default': id,
+      };
+      final response = await BaseClient.put(url: network.Urls.addDefaultAddressUrl, payload: data);
       return response is Response && response.statusCode == 200;
     } catch (e) {
       rethrow;

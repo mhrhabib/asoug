@@ -17,6 +17,7 @@ class Urls {
   static const getProductsUrl = '$baseUrl/products?per_page=20';
   //address
   static const addressUrl = '$baseUrl/address';
+  static const addDefaultAddressUrl = '$baseUrl/set-default-address';
   //brands
   static const getBrandsUrl = '$baseUrl/top-brands';
   //settings
@@ -33,4 +34,7 @@ class Urls {
   //orders
   static const getOrdersUrl = '$baseUrl/orders';
   static const getOrderBuyerUrl = '$baseUrl/orders/buyer';
+
+  //services
+  static const getServicesUrl = '$baseUrl/services';
 }

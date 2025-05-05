@@ -18,18 +18,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
+
     _controller.fetchProducts();
     _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_scrollListener);
+
     _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !_controller.isLoading.value && _controller.currentPage.value < _controller.totalPages.value) {
+    print("<><><><><><><><><><>scroll<><><><><><><><");
+    if (!_controller.isLoading.value && _scrollController.position.extentAfter < 2) {
+      print("ScrollListener: Loading more products");
       _controller.loadMoreProducts();
     }
   }
@@ -39,7 +44,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Products',
           style: TextStyle(color: Colors.white),
@@ -51,32 +56,39 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await _controller.fetchProducts();
-        },
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              sliver: SliverToBoxAdapter(
-                child: _buildSearchBar(),
-              ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        physics: AlwaysScrollableScrollPhysics(),
+        shrinkWrap: true,
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            sliver: SliverToBoxAdapter(
+              child: _buildSearchBar(),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              sliver: SliverToBoxAdapter(
-                child: _buildActiveFiltersChips(),
-              ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            sliver: SliverToBoxAdapter(
+              child: _buildActiveFiltersChips(),
             ),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              sliver: SliverToBoxAdapter(),
-            ),
-            _buildProductGrid(),
-          ],
-        ),
+          ),
+          const SliverPadding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            sliver: SliverToBoxAdapter(),
+          ),
+          _buildProductGrid(),
+          SliverToBoxAdapter(
+            child: Obx(() {
+              return _controller.isLoading.value
+                  ? const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : const SizedBox.shrink();
+            }),
+          ),
+        ],
       ),
     );
   }
@@ -225,7 +237,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             final product = _controller.products.value!.data![index];
             return _buildProductItem(product);
           },
-          childCount: _controller.products.value!.data!.length + (_controller.isLoading.value ? 1 : 0),
+          childCount: _controller.products.value!.data!.length + (_controller.isLoading.value && _controller.currentPage.value > 1 ? 1 : 0),
         ),
       );
     });
@@ -237,7 +249,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to product details
         Get.to(() => ProductDetailsScreen(product: product));
       },
       child: Card(
@@ -348,7 +359,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            // Ensure we have a valid initial value
             final initialSortValue = _controller.sortBy.value.isNotEmpty ? _controller.sortBy.value : 'name-asc';
 
             return Padding(
@@ -405,7 +415,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: initialSortValue, // Use the validated initial value
+                      value: initialSortValue,
                       decoration: const InputDecoration(
                         labelText: 'Sort By',
                         border: OutlineInputBorder(),

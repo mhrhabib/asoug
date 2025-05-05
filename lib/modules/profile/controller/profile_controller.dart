@@ -40,9 +40,10 @@ class ProfileController extends GetxController {
     return success;
   }
 
-  Future<bool> updatePassword(String password, String passwordConfirmation) async {
+  Future<bool> updatePassword(String currentPassword, String password, String passwordConfirmation) async {
     isLoading.value = true;
     final success = await _repo.updatePassword(
+      currentPassword: currentPassword,
       password: password,
       passwordConfirmation: passwordConfirmation,
     );

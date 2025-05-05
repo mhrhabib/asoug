@@ -18,9 +18,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'Abu Taleb');
-  final _emailController = TextEditingController(text: 'abu.taleb@example.com');
-  final _phoneController = TextEditingController(text: '+966 50 123 4567');
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -28,6 +28,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileController _controller = Get.put(ProfileController());
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    _nameController.text = _controller.profile.value.name ?? '';
+    _emailController.text = _controller.profile.value.email ?? '';
+    _phoneController.text = _controller.profile.value.phone ?? '';
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -352,6 +360,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _changePassword() async {
     if (_passwordFormKey.currentState?.validate() ?? false) {
       final success = await _controller.updatePassword(
+        _currentPasswordController.text.trim(),
         _newPasswordController.text.trim(),
         _confirmPasswordController.text.trim(),
       );

@@ -4,11 +4,10 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 import 'controllers/address_controller.dart';
+import 'models/address_model.dart';
 
 class AddNewAddressScreen extends StatefulWidget {
-  final Map<String, String>? address; // For editing existing address
-
-  const AddNewAddressScreen({super.key, this.address});
+  const AddNewAddressScreen({super.key});
 
   @override
   State<AddNewAddressScreen> createState() => _AddNewAddressScreenState();
@@ -27,20 +26,46 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
   late TextEditingController _zipController;
   bool _isDefault = false;
 
+  // Variables to track edit mode
+  late bool _isEditing;
+  late Address _editingAddress;
+
   @override
   void initState() {
     super.initState();
-    final address = widget.address;
-    _nameController = TextEditingController(text: address?['name'] ?? '');
-    _emailController = TextEditingController(text: address?['email'] ?? '');
-    _phoneController = TextEditingController(text: address?['phone'] ?? '');
-    _address1Controller = TextEditingController(text: address?['address1'] ?? '');
-    _address2Controller = TextEditingController(text: address?['address2'] ?? '');
-    _countryController = TextEditingController(text: address?['country'] ?? '');
-    _stateController = TextEditingController(text: address?['state'] ?? '');
-    _cityController = TextEditingController(text: address?['city'] ?? '');
-    _zipController = TextEditingController(text: address?['zip'] ?? '');
-    _isDefault = address?['isDefault'] == 'true';
+
+    // Initialize controllers with empty values
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _address1Controller = TextEditingController();
+    _address2Controller = TextEditingController();
+    _countryController = TextEditingController();
+    _stateController = TextEditingController();
+    _cityController = TextEditingController();
+    _zipController = TextEditingController();
+
+    // Check if we're in edit mode
+    final args = Get.arguments;
+    _isEditing = args != null && args['mode'] == 'edit';
+
+    if (_isEditing) {
+      _editingAddress = args['address'] as Address;
+      _populateFormWithAddressData();
+    }
+  }
+
+  void _populateFormWithAddressData() {
+    _nameController.text = _editingAddress.name ?? '';
+    _emailController.text = _editingAddress.email ?? '';
+    _phoneController.text = _editingAddress.phone ?? '';
+    _address1Controller.text = _editingAddress.address ?? '';
+    _address2Controller.text = _editingAddress.address2 ?? '';
+    _countryController.text = _editingAddress.country?.toString() ?? '1';
+    _stateController.text = _editingAddress.state?.toString() ?? '1';
+    _cityController.text = _editingAddress.city ?? '';
+    _zipController.text = _editingAddress.zipCode ?? '';
+    _isDefault = _editingAddress.isDefault == 1;
   }
 
   @override
@@ -62,12 +87,11 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
     final buttonWidth = screenWidth * 0.9;
-    final isEditing = widget.address != null;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isEditing ? 'Edit Address' : 'Add New Address',
+          _isEditing ? 'Edit Address' : 'Add New Address',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -175,7 +199,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                     _isDefault = value;
                   });
                 },
-                activeColor: Theme.of(context).primaryColor,
+                activeColor: Colors.white,
               ),
               const Gap(24),
               SizedBox(
@@ -193,7 +217,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                   onPressed: _submitAddress,
                   icon: const Icon(Icons.check, size: 20),
                   label: Text(
-                    isEditing ? 'Update Address' : 'Save Address',
+                    _isEditing ? 'Update Address' : 'Save Address',
                     style: TextStyle(
                       fontSize: isSmallScreen ? 16 : 18,
                       fontWeight: FontWeight.w600,
@@ -270,10 +294,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
 
       final addressController = Get.find<AddressController>();
 
-      if (widget.address != null) {
-        // Editing existing address - you'll need to have the address ID
-        final addressId = int.tryParse(widget.address?['id'] ?? '0') ?? 0;
-        addressController.updateAddress(addressId, addressData);
+      if (_isEditing) {
+        // Editing existing address
+        addressController.updateAddress(_editingAddress.id!, addressData);
       } else {
         // Adding new address
         addressController.addAddress(addressData);

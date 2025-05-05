@@ -1,4 +1,27 @@
 class AddressModel {
+  List<Address>? data;
+
+  AddressModel({this.data});
+
+  AddressModel.fromJson(Map<String, dynamic> json) {
+    if (json['data'] != null) {
+      data = <Address>[];
+      json['data'].forEach((v) {
+        data!.add(Address.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Address {
   int? id;
   String? name;
   String? email;
@@ -11,11 +34,11 @@ class AddressModel {
   String? stateName;
   String? city;
   String? zipCode;
-  bool? isDefault;
+  int? isDefault;
 
-  AddressModel({this.id, this.name, this.email, this.phone, this.address, this.address2, this.country, this.countryName, this.state, this.stateName, this.city, this.zipCode, this.isDefault});
+  Address({this.id, this.name, this.email, this.phone, this.address, this.address2, this.country, this.countryName, this.state, this.stateName, this.city, this.zipCode, this.isDefault});
 
-  AddressModel.fromJson(Map<String, dynamic> json) {
+  Address.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     email = json['email'];
