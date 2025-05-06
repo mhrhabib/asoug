@@ -37,4 +37,6 @@ class Urls {
 
   //services
   static const getServicesUrl = '$baseUrl/services';
+  //about us
+  static const aboutUsUrl = '$baseUrl/about-us';
 }

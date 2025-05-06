@@ -31,6 +31,16 @@ class OrderController extends GetxController {
     }
   }
 
+  RxString selectedStatus = 'All'.obs;
+
+  List<Orders> get filteredOrders {
+    if (selectedStatus.value == 'All') {
+      return orders.value?.orders ?? [];
+    } else {
+      return orders.value?.orders?.where((order) => order.status?.toLowerCase() == selectedStatus.value.toLowerCase()).toList() ?? [];
+    }
+  }
+
   Future<void> fetchBuyerOrders() async {
     try {
       isLoading.value = true;

@@ -59,18 +59,19 @@ class ProfileRepository {
 
   Future<bool> updateAvatar(File? avatarFile) async {
     try {
-      final formData = dio.FormData.fromMap({
+      dio.FormData formData = dio.FormData.fromMap({
         // Make sure the key 'avatar' matches the backend expectation
-        "avatar": await dio.MultipartFile.fromFile(
-          avatarFile!.path,
-          filename: avatarFile.path.split('/').last,
-        ),
       });
+      formData.files.add(MapEntry(
+        "avatar",
+        await dio.MultipartFile.fromFile(avatarFile!.path, filename: avatarFile.path.split('/').last),
+      )); // Add an empty field to match the backend expectation
 
-      final response = await BaseClient.put(
+      final response = await BaseClient.post(
         url: Urls.updateAvatarUrl,
         payload: formData,
       );
+      print('Response: ${response.data}');
 
       if (response.statusCode == 200) {
         return true;

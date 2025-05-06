@@ -158,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(avatarRadius),
                       child: Image.network(
-                        'https://picsum.photos/200',
+                        _controller.profile.value.avatar ?? 'https://picsum.photos/200',
                         width: avatarRadius * 2,
                         height: avatarRadius * 2,
                         fit: BoxFit.cover,
@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 4,
                         spreadRadius: 1,
                       )
@@ -212,11 +212,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.grey[600],
           ),
         ),
-        Text(
-          'Abu Taleb',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+        Obx(
+          () => Text(
+            _controller.profile.value.name ?? '',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
@@ -397,6 +399,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() {
                     _selectedImage = File(pickedFile.path);
                   });
+                  final success = await _controller.updateAvatar(_selectedImage!);
+                  if (success) {
+                    print("updated");
+                  } else {
+                    print('not updated');
+                  }
                 }
               },
             ),

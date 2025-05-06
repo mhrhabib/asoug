@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import '../address/address_screen.dart';
 import '../help&support/help_support_screen.dart';
 import '../orders/all_orders_screen.dart';
+import '../orders/controllers/order_controller.dart';
+import '../orders/models/order_model.dart';
 import '../products/cancelation/cancelation_products_list_screen.dart';
 import '../products/return/return_products_screen.dart';
 import '../profile/controller/profile_controller.dart';
@@ -22,6 +24,8 @@ class UserDashboardScreen extends StatefulWidget {
 
 class _UserDashboardScreenState extends State<UserDashboardScreen> {
   final profileController = Get.put(ProfileController());
+
+  final orderController = Get.put(OrderController());
 
   final orderNameList = [
     'All',
@@ -180,46 +184,64 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
             // Order status tabs
             SliverToBoxAdapter(
               child: Container(
-                height: 40,
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 149, 6, 196),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  itemCount: orderNameList.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Center(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          orderNameList[index],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
+                  height: 40,
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 149, 6, 196),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    itemCount: orderNameList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      final status = orderNameList[index];
+                      final isSelected = orderController.selectedStatus.value == status;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            orderController.selectedStatus.value = status;
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.white : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                              color: isSelected ? Colors.purple : Colors.white,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                      );
+                    },
+                  )),
             ),
 
             const SliverToBoxAdapter(child: Gap(12)),
 
             // Order items list
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildOrderItem(context, index),
-                childCount: 2, // Replace with your actual order count
-              ),
+            SliverToBoxAdapter(
+              child: Obx(() {
+                final filtered = orderController.filteredOrders;
+                if (orderController.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (filtered.isEmpty) {
+                  return const Center(child: Text('No orders found.'));
+                }
+                return Column(
+                  children: List.generate(filtered.length, (index) {
+                    final order = filtered[index];
+                    return _buildOrderItem(order);
+                  }),
+                );
+              }),
             ),
 
             const SliverToBoxAdapter(child: Gap(16)),
@@ -236,117 +258,14 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
     );
   }
 
-  Widget _buildOrderItem(BuildContext context, int index) {
-    final isSmallScreen = MediaQuery.of(context).size.width < 360;
-    final products = [
-      {
-        'shop': 'Asoug shop',
-        'status': 'To shipped',
-        'image': 'assets/image (11).png',
-        'title': 'Energizer Alkaline Power AAA Batteries 32 Count (Pack of 1), Long-Lasting Triple A Batteries',
-        'price': 'SAR 20.00',
-        'qty': '01',
-      },
-      {
-        'shop': 'Green shop bd.',
-        'status': 'To shipped',
-        'image': 'assets/image (12).png',
-        'title': 'Soft PU Leather Shoulder Handbag Multi Pocket Crossbody Bag Ladies Medium Roomy Purses Fashion',
-        'price': 'SAR 20.00',
-        'qty': '01',
-      },
-    ];
-
-    final product = products[index];
-
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/shop.svg',
-                    width: isSmallScreen ? 16 : 20,
-                  ),
-                  const Gap(8),
-                  Text(
-                    product['shop']!,
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 14 : 16,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    product['status']!,
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 12 : 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.asset(
-                    product['image']!,
-                    height: isSmallScreen ? 70 : 80,
-                    width: isSmallScreen ? 70 : 80,
-                    fit: BoxFit.cover,
-                  ),
-                  const Gap(12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product['title']!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 12 : 14,
-                          ),
-                        ),
-                        const Gap(8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              product['price']!,
-                              style: TextStyle(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              'Qty. ${product['qty']!}',
-                              style: TextStyle(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: Colors.grey.shade300,
-          indent: 12,
-          endIndent: 12,
-        ),
-      ],
+  Widget _buildOrderItem(Orders order) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: ListTile(
+        title: Text('Order #: ${order.orderNumber ?? "N/A"}'),
+        subtitle: Text('Status: ${order.status ?? "Pending"}\nDate: ${order.createdAt ?? ""}'),
+        trailing: Text('SAR ${order.totalAmount?.toStringAsFixed(2) ?? "0.00"}'),
+      ),
     );
   }
 

@@ -1,13 +1,9 @@
 import 'package:asoug/modules/auth/forgotPassword/forgot_password_screen.dart';
 import 'package:asoug/modules/auth/screens/sign_up_screen.dart';
-import 'package:asoug/modules/home/screens/home_screens.dart';
-import 'package:asoug/modules/main/main_screen.dart';
-import 'package:asoug/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../core/common/widgets/custom_elevated_button.dart';
 import '../../../core/common/widgets/custom_image_view.dart';
 import '../../../core/common/widgets/custom_text_form_field.dart';
@@ -145,7 +141,7 @@ class SignInScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         )),
                       ),
-                      text: controller.isLoading.value ? 'loading'.tr : 'login'.tr,
+                      text: controller.isLoading.value ? 'loading.....'.tr : 'login'.tr,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           controller.login();

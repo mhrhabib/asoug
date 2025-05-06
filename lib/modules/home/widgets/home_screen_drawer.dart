@@ -1,15 +1,18 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
+import 'package:asoug/modules/help&support/help_support_screen.dart';
 import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
 import 'package:asoug/modules/products/featured_product_screen.dart';
 import 'package:asoug/modules/products/product_list_screen.dart';
+import 'package:asoug/modules/queries/queries_screen.dart';
 import 'package:asoug/modules/supplier/supplier_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/common/global/general_settings_controller.dart';
 import '../../../core/helper/logout_helper.dart';
+import '../../about/about_screen.dart';
 
 class HomeScreenWithDrawer extends StatelessWidget {
   HomeScreenWithDrawer({super.key});
@@ -149,10 +152,19 @@ class HomeScreenWithDrawer extends StatelessWidget {
                 ),
                 _buildDrawerTile(
                   context,
-                  icon: Icons.help,
-                  title: 'Help & Support',
+                  icon: Icons.info_outline,
+                  title: 'About Us',
                   onTap: () {
-                    Navigator.pop(context);
+                    Get.to(() => AboutScreen());
+                    // Navigate to help
+                  },
+                ),
+                _buildDrawerTile(
+                  context,
+                  icon: Icons.help,
+                  title: 'hlp & support',
+                  onTap: () {
+                    Get.to(() => HelpSupportScreen());
                     // Navigate to help
                   },
                 ),
