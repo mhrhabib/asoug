@@ -177,7 +177,7 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
                 ),
                 child: GridView.builder(
                   shrinkWrap: true,
-                  physics: const AlwaysScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 20,

@@ -29,7 +29,9 @@ class _FeaturedProductScreenState extends State<FeaturedProductScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !_controller.isLoading.value && _controller.currentPage.value < _controller.totalPages.value) {
+    print("scrool position: ${_scrollController.position.pixels}");
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100) {
+      print('test scroll');
       _controller.loadMoreFeaturedProducts();
     }
   }
@@ -51,32 +53,34 @@ class _FeaturedProductScreenState extends State<FeaturedProductScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await _controller.fetchFeaturedProducts();
-        },
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              sliver: SliverToBoxAdapter(
-                child: _buildSearchBar(),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            sliver: SliverToBoxAdapter(
+              child: _buildSearchBar(),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            sliver: SliverToBoxAdapter(
+              child: _buildActiveFiltersChips(),
+            ),
+          ),
+          const SliverPadding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            sliver: SliverToBoxAdapter(),
+          ),
+          _buildProductGrid(),
+          if (_controller.isLoading.value && _controller.currentPage.value > 1)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              sliver: SliverToBoxAdapter(
-                child: _buildActiveFiltersChips(),
-              ),
-            ),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              sliver: SliverToBoxAdapter(),
-            ),
-            _buildProductGrid(),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -237,7 +241,7 @@ class _FeaturedProductScreenState extends State<FeaturedProductScreen> {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => ProductDetailsScreen(product: product));
+        Get.to(() => ProductDetailsScreen(productSlug: product.slug!));
       },
       child: Card(
         elevation: 2,

@@ -1,3 +1,4 @@
+import 'package:asoug/modules/products/models/product_details_model.dart';
 import 'package:asoug/modules/products/repo/product_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ class ProductController extends GetxController {
 
   Rx<ProductModel?> products = Rx<ProductModel?>(null);
   Rx<ProductModel?> featuredProducts = Rx<ProductModel?>(null);
-  Rx<ProductModel?> productDetails = Rx<ProductModel?>(null);
+  Rx<ProductDetailsModel?> productDetails = Rx<ProductDetailsModel?>(null);
   Rx<ProductModel?> relatedProducts = Rx<ProductModel?>(null);
   RxBool isLoading = false.obs;
   RxString errorMessage = ''.obs;
@@ -93,11 +94,13 @@ class ProductController extends GetxController {
     }
   }
 
-  Future<void> fetchProductDetails(String productId) async {
+  Future<void> fetchProductDetails(String slug) async {
+    print('Fetching product details for slug: $slug');
+    print('isLoading: ${isLoading.value}');
     try {
       isLoading.value = true;
-      final response = await _productRepository.getProductDetails(productId);
-      if (response is ProductModel) {
+      final response = await _productRepository.getProductDetails(slug);
+      if (response is ProductDetailsModel) {
         productDetails.value = response;
         errorMessage.value = '';
       } else {

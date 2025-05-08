@@ -1,4 +1,5 @@
-import 'package:dio/dio.dart';
+import 'package:asoug/modules/products/models/product_details_model.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/urls.dart' as network;
@@ -59,7 +60,7 @@ class ProductRepository {
       );
 
       // Check if response is Dio Response and extract data
-      if (response is Response) {
+      if (response is dio.Response) {
         if (response.data != null) {
           return ProductModel.fromJson(response.data);
         }
@@ -70,7 +71,7 @@ class ProductRepository {
       }
 
       return null;
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       debugPrint('Dio Error: ${e.message}');
       if (e.response != null) {
         debugPrint('Status code: ${e.response?.statusCode}');
@@ -83,14 +84,17 @@ class ProductRepository {
     }
   }
 
-  Future<dynamic> getProductDetails(String productId) async {
+  Future<dynamic> getProductDetails(String slug) async {
+    print('in the repo');
+    print(slug);
     try {
-      final response = await BaseClient.get(
-        url: '${network.Urls.getProductsUrl}/$productId',
+      dio.Response response = await BaseClient.get(
+        url: '${network.Urls.getProductsDetailsUrl}$slug',
       );
-      return ProductModel.fromJson(response);
-    } on DioException catch (e) {
-      return e.response!;
+      print(response.statusCode);
+      return ProductDetailsModel.fromJson(response.data);
+    } on dio.DioException catch (e) {
+      return e;
     }
   }
 
@@ -101,7 +105,7 @@ class ProductRepository {
         payload: {'featured': true},
       );
       return ProductModel.fromJson(response);
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       return e.response!;
     }
   }
@@ -112,7 +116,7 @@ class ProductRepository {
         url: '${network.Urls.getProductsUrl}/$productId/related',
       );
       return ProductModel.fromJson(response);
-    } on DioException catch (e) {
+    } on dio.DioException catch (e) {
       return e.response!;
     }
   }

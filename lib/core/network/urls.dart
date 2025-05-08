@@ -15,6 +15,7 @@ class Urls {
   //products
   static const getFeaturedProductsUrl = '$baseUrl/featured-products?per_page=20';
   static const getProductsUrl = '$baseUrl/products?per_page=20';
+  static const getProductsDetailsUrl = '$baseUrl/product/';
   //address
   static const addressUrl = '$baseUrl/address';
   static const addDefaultAddressUrl = '$baseUrl/set-default-address';

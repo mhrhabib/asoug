@@ -29,16 +29,40 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> addToCart(Map<String, dynamic> cartData) async {
+  Future<void> addToCart({
+    required int productId,
+    required int quantity,
+    int? variationId,
+    int? shippingMethod,
+    String? temporaryId,
+  }) async {
     try {
       isLoading.value = true;
-      final result = await _repository.addToCart(cartData);
-      cart.value = result;
       errorMessage.value = '';
-      Get.snackbar('Success', 'Item added to cart');
+
+      final result = await _repository.addToCart(
+        productId: productId,
+        quantity: quantity,
+        variationId: variationId,
+        shippingMethod: shippingMethod,
+        temporaryId: temporaryId ?? 'guest_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      cart.value = result;
+      Get.snackbar(
+        'Success',
+        'Item added to cart',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
     } catch (e) {
       errorMessage.value = e.toString();
-      Get.snackbar('Error', 'Failed to add item to cart');
+      Get.snackbar(
+        'Error',
+        'Failed to add item to cart: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
     } finally {
       isLoading.value = false;
     }

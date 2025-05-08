@@ -64,7 +64,10 @@ class FeaturedProductController extends GetxController {
   }
 
   Future<void> loadMoreFeaturedProducts() async {
+    print('inside loadMoreFeaturedProducts');
+    print('currentPage: ${currentPage.value}');
     if (currentPage.value < totalPages.value && !isLoading.value) {
+      print('inside if statement');
       currentPage.value++;
       await fetchFeaturedProducts(loadMore: true);
     }

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/urls.dart' as network;
 import '../models/cart_models.dart';
+import 'package:dio/dio.dart' as dio;
 
 class CartRepository {
   Future<CartModel> getCart() async {
@@ -19,12 +20,32 @@ class CartRepository {
     }
   }
 
-  Future<CartModel> addToCart(Map<String, dynamic> cartData) async {
+// In your cart_repository.dart
+  Future<CartModel> addToCart({
+    required int productId,
+    required int quantity,
+    int? variationId,
+    int? shippingMethod,
+    String? temporaryId,
+  }) async {
     try {
-      final response = await BaseClient.post(
+      final payload = {
+        'product_id': productId,
+        'quantity': quantity,
+        if (variationId != null) 'variation_id': variationId,
+        if (shippingMethod != null) 'shipping_method': shippingMethod,
+        if (temporaryId != null) 'temporary_id': temporaryId,
+      };
+      print(payload);
+
+      dio.Response response = await BaseClient.post(
         url: network.Urls.addCartUrl,
-        payload: cartData,
+        payload: payload,
       );
+
+      print(response);
+      print(response.statusCode);
+      print(response.statusMessage);
 
       if (response is Response) {
         return CartModel.fromJson(response.data);

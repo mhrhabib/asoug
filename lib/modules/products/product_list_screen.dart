@@ -249,7 +249,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => ProductDetailsScreen(product: product));
+        Get.to(() => ProductDetailsScreen(productSlug: product.slug!));
       },
       child: Card(
         elevation: 2,
