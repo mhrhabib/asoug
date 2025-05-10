@@ -5,7 +5,7 @@ class Urls {
   static const registerUrl = '$baseUrl/register';
 
   static const getUserUrl = '$baseUrl/me';
-  static const forgotPasswordUrl = '$baseUrl/password/email';
+  static const forgotPasswordUrl = '$baseUrl/app/password/email';
   static const resetPasswordUrl = '$baseUrl/password/reset';
   static const updateProfileURl = '$baseUrl/profile';
   static const updatePasswordUrl = '$baseUrl/password/update';

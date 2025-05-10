@@ -2,12 +2,12 @@ import 'package:asoug/core/common/widgets/toast.dart';
 import 'package:asoug/modules/auth/models/login_model.dart';
 import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
 import 'package:asoug/modules/home/screens/home_landing_screen.dart';
-import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
 import '../../../core/utils/storage.dart';
-import '../../../routes/app_routes.dart';
+import '../forgotPassword/reset_password_screen.dart';
 import '../repository/auth_repository.dart';
 
 class AuthController extends GetxController {
@@ -139,6 +139,7 @@ class AuthController extends GetxController {
     }
   }
 
+  var otpCode = ''.obs;
   // Forgot password function
   Future<void> forgotPassword(String email) async {
     try {
@@ -146,28 +147,33 @@ class AuthController extends GetxController {
 
       final response = await _authRepository.forgotPassword(email);
 
-      if (response.statusCode == 200) {
-        Get.snackbar(
-          'Success',
-          'Password reset link sent to your email',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
+      print("<><><><><><> ${response}");
+      print("<><><><><><> ${response['status']}");
+
+      if (response['status'] == true || response['status'] == 'true') {
+        otpCode.value = response['token']?.toString() ?? '';
+        print(otpCode.value);
+
+        Get.to(
+          () => ResetPasswordScreen(
+            email: emailreset.text.trim(),
+            token: otpCode.value,
+          ),
         );
-        Get.back(); // Go back to login screen
       } else {
         Get.snackbar(
           'Error',
-          response.data['message'] ?? 'Failed to send reset link',
+          response['message'] ?? 'Failed to send reset link',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
       }
     } catch (e) {
+      print("Error in forgotPassword: $e"); // Add this for debugging
       Get.snackbar(
         'Error',
-        'An error occurred while processing your request',
+        e.toString(), // Show the actual error message
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -211,5 +217,58 @@ class AuthController extends GetxController {
     // confirmPassword.dispose();
 
     super.onClose();
+  }
+
+  //reset password
+
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final RxBool obscureNewPassword = true.obs;
+  final RxBool obscureConfirmPassword = true.obs;
+
+  // Toggle password visibility for reset password
+  void toggleNewPasswordVisibility() => obscureNewPassword.toggle();
+  void toggleConfirmPasswordVisibility() => obscureConfirmPassword.toggle();
+
+  // Reset password function
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+  }) async {
+    try {
+      if (newPasswordController.text != confirmPasswordController.text) {
+        throw "Passwords do not match";
+      }
+
+      if (newPasswordController.text.length < 8) {
+        throw "Password must be at least 8 characters";
+      }
+
+      isLoading.value = true;
+
+      final response = await _authRepository.resetPassword(
+        email: email,
+        token: token,
+        password: newPasswordController.text.trim(),
+        passwordConfirmation: confirmPasswordController.text.trim(),
+      );
+
+      if (response.statusCode == 200) {
+        Get.offAll(() => SignInScreen());
+        toast("Password reset successfully", bgColor: Colors.green);
+      } else {
+        throw response.data['message'] ?? 'Password reset failed';
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

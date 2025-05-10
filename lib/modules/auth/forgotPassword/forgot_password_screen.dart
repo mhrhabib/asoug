@@ -1,5 +1,6 @@
 import 'package:asoug/core/common/widgets/custom_elevated_button.dart';
 import 'package:asoug/core/common/widgets/custom_text_form_field.dart';
+import 'package:asoug/modules/auth/forgotPassword/reset_password_screen.dart';
 import 'package:asoug/modules/auth/forgotPassword/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,14 +26,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _sendVerificationCode() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        await authController.forgotPassword(authController.emailreset.text.trim());
+      await authController.forgotPassword(authController.emailreset.text.trim());
 
-        // Navigate to verification screen only if API call succeeds
-        Get.to(() => VerificationScreen(email: authController.emailreset.text.trim()));
-      } catch (e) {
-        // Error handling is already done in the controller
-      }
+      // Navigate to verification screen only if API call succeeds
     }
   }
 

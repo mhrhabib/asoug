@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/urls.dart';
@@ -35,13 +36,23 @@ class AuthRepository {
 
   Future<dynamic> forgotPassword(String email) async {
     try {
-      final response = await BaseClient.post(
+      var data = {'email': email};
+      dio.Response response = await BaseClient.post(
         url: Urls.forgotPasswordUrl,
-        payload: {'email': email},
+        payload: data,
       );
-      return response;
+      print("respone ${response.data}");
+
+      // if (response is! Map<String, dynamic>) {
+      //   throw "Invalid server response";
+      // }
+
+      return response.data;
     } on DioException catch (e) {
-      return e.response!;
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        return e.response!.data;
+      }
+      throw "Failed to process request";
     }
   }
 
@@ -50,6 +61,32 @@ class AuthRepository {
       final response = await BaseClient.post(
         url: Urls.logoutUrl,
       );
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
+    }
+  }
+
+  //reset password
+  Future<dynamic> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final data = {
+        'email': email,
+        'token': token,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      };
+
+      final response = await BaseClient.post(
+        url: Urls.resetPasswordUrl,
+        payload: data,
+      );
+
       return response;
     } on DioException catch (e) {
       return e.response!;

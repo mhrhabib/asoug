@@ -159,12 +159,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     text: 'Continue',
                     buttonTextStyle: const TextStyle(color: Colors.white),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ResetPasswordScreen(email: widget.email),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => ResetPasswordScreen(email: widget.email),
+                      //   ),
+                      // );
                     },
                     buttonStyle: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll<Color>(
