@@ -1,10 +1,7 @@
 import 'package:asoug/core/common/widgets/custom_elevated_button.dart';
 import 'package:asoug/core/common/widgets/custom_text_form_field.dart';
-import 'package:asoug/modules/auth/forgotPassword/reset_password_screen.dart';
-import 'package:asoug/modules/auth/forgotPassword/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/auth_controller.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {

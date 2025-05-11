@@ -57,11 +57,11 @@ class AboutScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (about.image != null && about.image!.isNotEmpty)
+              if (about.image_url != null && about.image_url!.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    about.image!,
+                    about.image_url!,
                     width: double.infinity,
                     height: 200,
                     fit: BoxFit.cover,

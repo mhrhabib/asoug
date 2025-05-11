@@ -158,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(avatarRadius),
                       child: Image.network(
-                        _controller.profile.value.avatar ?? 'https://picsum.photos/200',
+                        _controller.profile.value.avatarUrl ?? 'https://picsum.photos/200',
                         width: avatarRadius * 2,
                         height: avatarRadius * 2,
                         fit: BoxFit.cover,

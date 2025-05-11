@@ -58,7 +58,7 @@ class ResetPasswordScreen extends StatelessWidget {
                     },
                     suffix: IconButton(
                       icon: Icon(
-                        controller.obscureNewPassword.value ? Icons.visibility : Icons.visibility_off,
+                        controller.obscureNewPassword.value ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: controller.toggleNewPasswordVisibility,
@@ -80,7 +80,7 @@ class ResetPasswordScreen extends StatelessWidget {
                     },
                     suffix: IconButton(
                       icon: Icon(
-                        controller.obscureConfirmPassword.value ? Icons.visibility : Icons.visibility_off,
+                        controller.obscureConfirmPassword.value ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: controller.toggleConfirmPasswordVisibility,

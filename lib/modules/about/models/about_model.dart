@@ -23,15 +23,15 @@ class Data {
   int? id;
   String? title;
   String? description;
-  String? image;
+  String? image_url;
 
-  Data({this.id, this.title, this.description, this.image});
+  Data({this.id, this.title, this.description, this.image_url});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];
-    image = json['image'];
+    image_url = json['image_url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,7 +39,7 @@ class Data {
     data['id'] = id;
     data['title'] = title;
     data['description'] = description;
-    data['image'] = image;
+    data['image_url'] = image_url;
     return data;
   }
 }

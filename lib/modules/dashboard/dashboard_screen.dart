@@ -102,14 +102,26 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: isSmallScreen ? 22 : 26,
-                      backgroundColor: Colors.grey[200],
-                      child: Image.asset(
-                        'assets/image (1).png',
-                        width: isSmallScreen ? 24 : 28,
-                        fit: BoxFit.cover,
-                      ),
+                    Obx(
+                      () => profileController.profile.value.avatarUrl != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: Image.network(
+                                profileController.profile.value.avatarUrl!,
+                                width: 30 * 2,
+                                height: 30 * 2,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : CircleAvatar(
+                              radius: isSmallScreen ? 22 : 26,
+                              backgroundColor: Colors.grey[200],
+                              child: Image.asset(
+                                'assets/image (1).png',
+                                width: isSmallScreen ? 24 : 28,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                     ),
                     const Gap(12),
                     Column(

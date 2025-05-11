@@ -1,4 +1,5 @@
 import 'package:asoug/core/common/widgets/toast.dart';
+import 'package:asoug/modules/auth/forgotPassword/verification_screen.dart';
 import 'package:asoug/modules/auth/models/login_model.dart';
 import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
 import 'package:asoug/modules/home/screens/home_landing_screen.dart';
@@ -155,9 +156,9 @@ class AuthController extends GetxController {
         print(otpCode.value);
 
         Get.to(
-          () => ResetPasswordScreen(
+          () => VerificationScreen(
             email: emailreset.text.trim(),
-            token: otpCode.value,
+            otp: otpCode.value,
           ),
         );
       } else {
@@ -247,8 +248,6 @@ class AuthController extends GetxController {
       isLoading.value = true;
 
       final response = await _authRepository.resetPassword(
-        email: email,
-        token: token,
         password: newPasswordController.text.trim(),
         passwordConfirmation: confirmPasswordController.text.trim(),
       );
@@ -258,6 +257,74 @@ class AuthController extends GetxController {
         toast("Password reset successfully", bgColor: Colors.green);
       } else {
         throw response.data['message'] ?? 'Password reset failed';
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      final response = await _authRepository.verifyEmail(
+        email: email,
+        otp: otp,
+      );
+
+      if (response.statusCode == 200) {
+        Get.to(
+          () => ResetPasswordScreen(
+            email: email,
+            token: otp,
+          ),
+        );
+        toast("Verification successful", bgColor: Colors.green);
+      } else {
+        throw response.data['message'] ?? 'Verification failed';
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Add resend OTP function
+  Future<void> resendOtp(String email) async {
+    try {
+      isLoading.value = true;
+
+      final response = await _authRepository.resendVerificationEmail(email);
+
+      if (response.statusCode == 200) {
+        otpCode.value = response.data['token']?.toString() ?? '';
+        Get.snackbar(
+          'Success',
+          response.data['message'] ?? 'Verification code resent',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        throw response.data['message'] ?? 'Failed to resend code';
       }
     } catch (e) {
       Get.snackbar(

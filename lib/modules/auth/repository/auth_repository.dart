@@ -69,21 +69,55 @@ class AuthRepository {
 
   //reset password
   Future<dynamic> resetPassword({
-    required String email,
-    required String token,
     required String password,
     required String passwordConfirmation,
   }) async {
     try {
       final data = {
-        'email': email,
-        'token': token,
         'password': password,
         'password_confirmation': passwordConfirmation,
       };
 
       final response = await BaseClient.post(
         url: Urls.resetPasswordUrl,
+        payload: data,
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
+    }
+  }
+
+  Future<dynamic> verifyEmail({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final data = {
+        'otp': otp,
+      };
+      print(data);
+
+      final response = await BaseClient.post(
+        url: Urls.verifyEmailUrl,
+        payload: data,
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return e.response!;
+    }
+  }
+
+  Future<dynamic> resendVerificationEmail(String email) async {
+    try {
+      final data = {
+        'email': email,
+      };
+
+      final response = await BaseClient.post(
+        url: Urls.resendEmailUrl,
         payload: data,
       );
 
