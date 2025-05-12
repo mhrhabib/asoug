@@ -31,13 +31,13 @@ class OrderController extends GetxController {
     }
   }
 
-  RxString selectedStatus = 'All'.obs;
+  RxString selectedStatus = '0'.obs;
 
   List<Orders> get filteredOrders {
-    if (selectedStatus.value == 'All') {
-      return orders.value?.orders ?? [];
+    if (selectedStatus.value == '0') {
+      return orders.value?.data ?? [];
     } else {
-      return orders.value?.orders?.where((order) => order.status?.toLowerCase() == selectedStatus.value.toLowerCase()).toList() ?? [];
+      return orders.value?.data?.where((order) => order.status.toString() == selectedStatus.value).toList() ?? [];
     }
   }
 
@@ -76,7 +76,7 @@ class OrderController extends GetxController {
 
       // Add the new order to the orders list
       if (orders.value != null) {
-        orders.value!.orders = [...?orders.value?.orders, ...?result.orders];
+        orders.value!.data = [...?orders.value?.data, ...?result.data];
       } else {
         orders.value = result;
       }
@@ -108,8 +108,8 @@ class OrderController extends GetxController {
   // }
 
   // Helper to get total number of orders
-  int get totalOrders => orders.value?.orders?.length ?? 0;
+  int get totalOrders => orders.value?.data?.length ?? 0;
 
   // Helper to get total number of buyer's orders
-  int get totalBuyerOrders => buyerOrders.value?.orders?.length ?? 0;
+  int get totalBuyerOrders => buyerOrders.value?.data?.length ?? 0;
 }

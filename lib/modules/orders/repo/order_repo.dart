@@ -4,10 +4,14 @@ import '../../../core/network/urls.dart' as network;
 import '../models/order_model.dart';
 
 class OrderRepository {
+  // For endpoints that require buyer role
+  static const Map<String, String> buyerHeaders = {'x-role': 'buyer'};
+
   Future<OrderModel> getOrders() async {
     try {
       final response = await BaseClient.get(
         url: network.Urls.getOrdersUrl,
+        headers: buyerHeaders, // Only add buyer header where needed
       );
 
       if (response is Response) {
@@ -23,6 +27,7 @@ class OrderRepository {
     try {
       final response = await BaseClient.get(
         url: network.Urls.getOrderBuyerUrl,
+        headers: buyerHeaders,
       );
 
       if (response is Response) {
@@ -51,6 +56,7 @@ class OrderRepository {
           'shipping_method': shippingMethod,
           'coupon_code': couponCode,
         },
+        // headers: buyerHeaders,
       );
 
       if (response is Response) {

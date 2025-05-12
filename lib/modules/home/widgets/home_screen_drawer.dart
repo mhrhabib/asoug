@@ -1,6 +1,7 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
 import 'package:asoug/modules/help&support/help_support_screen.dart';
 import 'package:asoug/modules/home/screens/home_screens.dart';
+import 'package:asoug/modules/main/main_screen.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
 import 'package:asoug/modules/products/featured_product_screen.dart';
@@ -64,7 +65,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                   icon: Icons.home,
                   title: 'Home',
                   onTap: () {
-                    Get.to(() => HomeScreen());
+                    Get.to(() => MainScreen());
                     // Navigate to home if needed
                   },
                 ),

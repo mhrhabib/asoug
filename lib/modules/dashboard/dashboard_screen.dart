@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -106,8 +107,14 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                       () => profileController.profile.value.avatarUrl != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(30),
-                              child: Image.network(
-                                profileController.profile.value.avatarUrl!,
+                              child: CachedNetworkImage(
+                                imageUrl: profileController.profile.value.avatarUrl!,
+                                placeholder: (context, url) => const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                                imageBuilder: (context, imageProvider) => CircleAvatar(
+                                  radius: isSmallScreen ? 22 : 26,
+                                  backgroundImage: imageProvider,
+                                ),
                                 width: 30 * 2,
                                 height: 30 * 2,
                                 fit: BoxFit.cover,
@@ -274,9 +281,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        title: Text('Order #: ${order.orderNumber ?? "N/A"}'),
-        subtitle: Text('Status: ${order.status ?? "Pending"}\nDate: ${order.createdAt ?? ""}'),
-        trailing: Text('SAR ${order.totalAmount?.toStringAsFixed(2) ?? "0.00"}'),
+        title: Text('Order #: ${order.orderId ?? "N/A"}'),
+        subtitle: Text('Status: ${order.status ?? "Pending"}\nDate: ${order.orderId ?? ""}'),
+        trailing: Text('SAR ${order.total ?? "0.00"}'),
       ),
     );
   }

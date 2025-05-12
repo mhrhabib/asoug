@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-
+import 'controllers/order_controller.dart';
+import 'models/order_model.dart';
 import 'order_details_screen.dart';
 
 class AllOrdersScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class AllOrdersScreen extends StatefulWidget {
 }
 
 class _AllOrdersScreenState extends State<AllOrdersScreen> {
+  final OrderController _orderController = Get.put(OrderController());
   final List<String> orderStatusList = [
     'All',
     'Confirmed',
@@ -24,64 +26,18 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
   ];
 
   int _selectedStatusIndex = 0;
-  final List<Map<String, dynamic>> _allOrders = [
-    {
-      'id': 'ORD-12345',
-      'shop': 'Asoug shop',
-      'image': 'assets/image (11).png',
-      'title': 'Energizer Alkaline Power AAA Batteries 32 Count (Pack of 1)',
-      'price': 20.00,
-      'quantity': 2,
-      'status': 'On the way',
-      'date': '2023-05-15',
-      'items': [
-        {'name': 'Batteries', 'price': 20.00, 'quantity': 2}
-      ],
-    },
-    {
-      'id': 'ORD-12346',
-      'shop': 'Green shop bd.',
-      'image': 'assets/image (1).png',
-      'title': 'Soft PU Leather Shoulder Handbag',
-      'price': 35.00,
-      'quantity': 1,
-      'status': 'Processing',
-      'date': '2023-05-10',
-      'items': [
-        {'name': 'Handbag', 'price': 35.00, 'quantity': 1}
-      ],
-    },
-    {
-      'id': 'ORD-12347',
-      'shop': 'Tech Store',
-      'image': 'assets/image (2).png',
-      'title': 'Wireless Headphones',
-      'price': 59.99,
-      'quantity': 1,
-      'status': 'Completed',
-      'date': '2023-04-28',
-      'items': [
-        {'name': 'Headphones', 'price': 59.99, 'quantity': 1}
-      ],
-    },
-    {
-      'id': 'ORD-12348',
-      'shop': 'Fashion Outlet',
-      'image': 'assets/image (12).png',
-      'title': 'Men\'s Running Shoes',
-      'price': 45.00,
-      'quantity': 1,
-      'status': 'Canceled',
-      'date': '2023-04-20',
-      'items': [
-        {'name': 'Running Shoes', 'price': 45.00, 'quantity': 1}
-      ],
-    },
-  ];
 
-  List<Map<String, dynamic>> get _filteredOrders {
-    if (_selectedStatusIndex == 0) return _allOrders;
-    return _allOrders.where((order) => order['status'].toLowerCase() == orderStatusList[_selectedStatusIndex].toLowerCase()).toList();
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      _orderController.fetchOrders();
+    });
+  }
+
+  List<Orders> get _filteredOrders {
+    if (_selectedStatusIndex == 0) return _orderController.orders.value?.data ?? [];
+    return _orderController.orders.value?.data?.where((order) => order.status == _selectedStatusIndex).toList() ?? [];
   }
 
   @override
@@ -106,54 +62,66 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // Status Filter Chips
-          SliverToBoxAdapter(
-            child: Container(
-              height: 50,
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: orderStatusList.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedStatusIndex = index;
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: _selectedStatusIndex == index ? const Color(0xFFFF6606) : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          orderStatusList[index],
-                          style: TextStyle(
-                            color: _selectedStatusIndex == index ? Colors.white : Colors.black,
-                            fontSize: isSmallScreen ? 12 : 14,
+      body: Obx(() {
+        if (_orderController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (_orderController.errorMessage.value.isNotEmpty) {
+          return Center(
+            child: Text(
+              _orderController.errorMessage.value,
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Status Filter Chips
+            SliverToBoxAdapter(
+              child: Container(
+                height: 50,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: orderStatusList.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatusIndex = index;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _selectedStatusIndex == index ? const Color(0xFFFF6606) : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            orderStatusList[index],
+                            style: TextStyle(
+                              color: _selectedStatusIndex == index ? Colors.white : Colors.black,
+                              fontSize: isSmallScreen ? 12 : 14,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
 
-          // Orders List
-          _filteredOrders.isEmpty
-              ? SliverFillRemaining(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+            // Orders List
+            _filteredOrders.isEmpty
+                ? SliverFillRemaining(
+                    child: Center(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                         Icon(
                           Icons.receipt_long,
                           size: 60,
@@ -167,26 +135,28 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                      ],
+                      ]),
+                    ),
+                  )
+                : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildOrderItem(_filteredOrders[index]),
+                      childCount: _filteredOrders.length,
                     ),
                   ),
-                )
-              : SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildOrderItem(_filteredOrders[index]),
-                    childCount: _filteredOrders.length,
-                  ),
-                ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildOrderItem(Map<String, dynamic> order) {
+  Widget _buildOrderItem(Orders order) {
     final isSmallScreen = MediaQuery.of(context).size.width < 360;
+    final firstCompany = order.companies?.firstOrNull;
+    final firstProduct = firstCompany?.products?.firstOrNull;
 
     return InkWell(
-      onTap: () => Get.to(() => OrderDetailsScreen()),
+      onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -203,7 +173,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                   Row(
                     children: [
                       Text(
-                        'Order #${order['id']}',
+                        'Order #${order.orderId}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -211,7 +181,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       ),
                       const Spacer(),
                       Text(
-                        order['date'],
+                        'Date here', // You might want to add date to your model
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -230,7 +200,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       ),
                       const Gap(8),
                       Text(
-                        order['shop'],
+                        firstCompany?.companyName ?? 'No company',
                         style: const TextStyle(
                           fontSize: 14,
                         ),
@@ -242,14 +212,14 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(order['status']).withOpacity(0.2),
+                          color: _getStatusColor(_getStatusString(order.status ?? 0)).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          order['status'],
+                          _getStatusString(order.status ?? 0),
                           style: TextStyle(
                             fontSize: 12,
-                            color: _getStatusColor(order['status']),
+                            color: _getStatusColor(_getStatusString(order.status ?? 0)),
                           ),
                         ),
                       ),
@@ -263,12 +233,25 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          order['image'],
-                          height: isSmallScreen ? 60 : 80,
-                          width: isSmallScreen ? 60 : 80,
-                          fit: BoxFit.cover,
-                        ),
+                        child: firstCompany?.companyLogoPath != null
+                            ? Image.network(
+                                firstCompany!.companyLogoPath!,
+                                height: isSmallScreen ? 60 : 80,
+                                width: isSmallScreen ? 60 : 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  height: isSmallScreen ? 60 : 80,
+                                  width: isSmallScreen ? 60 : 80,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(Icons.image_not_supported),
+                                ),
+                              )
+                            : Container(
+                                height: isSmallScreen ? 60 : 80,
+                                width: isSmallScreen ? 60 : 80,
+                                color: Colors.grey.shade200,
+                                child: const Icon(Icons.store),
+                              ),
                       ),
                       const Gap(12),
                       Expanded(
@@ -276,7 +259,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              order['title'],
+                              firstProduct?.name ?? 'No product name',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -288,14 +271,14 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'SAR ${order['price'].toStringAsFixed(2)}',
+                                  'SAR ${firstProduct?.price ?? '0.00'}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  'Qty: ${order['quantity']}',
+                                  'Qty: ${firstProduct?.quantity ?? 0}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                   ),
@@ -327,7 +310,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
-                  if (order['status'] == 'On the way')
+                  if (order.status == 3) // On the way
                     TextButton(
                       onPressed: () => _trackOrder(order),
                       child: const Text(
@@ -335,7 +318,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                         style: TextStyle(color: Colors.green),
                       ),
                     ),
-                  if (order['status'] == 'Processing' || order['status'] == 'Confirmed')
+                  if (order.status == 1 || order.status == 2) // Processing or Confirmed
                     TextButton(
                       onPressed: () => _cancelOrder(order),
                       child: const Text(
@@ -350,6 +333,25 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
         ),
       ),
     );
+  }
+
+  String _getStatusString(int status) {
+    switch (status) {
+      case 1:
+        return 'Confirmed';
+      case 2:
+        return 'Processing';
+      case 3:
+        return 'On the way';
+      case 4:
+        return 'Completed';
+      case 5:
+        return 'On hold';
+      case 6:
+        return 'Canceled';
+      default:
+        return 'Unknown';
+    }
   }
 
   Color _getStatusColor(String status) {
@@ -371,21 +373,21 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
     }
   }
 
-  void _reorder(Map<String, dynamic> order) {
+  void _reorder(Orders order) {
     // Implement reorder functionality
     Get.snackbar(
       'Reorder',
-      'Added items from order #${order['id']} to cart',
+      'Added items from order #${order.orderId} to cart',
       snackPosition: SnackPosition.BOTTOM,
     );
   }
 
-  void _trackOrder(Map<String, dynamic> order) {
+  void _trackOrder(Orders order) {
     // Implement track order functionality
     Get.to(() => OrderTrackingScreen(order: order));
   }
 
-  void _cancelOrder(Map<String, dynamic> order) {
+  void _cancelOrder(Orders order) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -398,14 +400,12 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
           ),
           TextButton(
             onPressed: () {
-              setState(() {
-                // Update order status to canceled
-                order['status'] = 'Canceled';
-              });
-              Navigator.pop(context);
+              // Update order status to canceled (status 6)
+              // You might want to add an API call to update the status
+              Get.back();
               Get.snackbar(
                 'Order Canceled',
-                'Order #${order['id']} has been canceled',
+                'Order #${order.orderId} has been canceled',
                 snackPosition: SnackPosition.BOTTOM,
               );
             },
@@ -418,7 +418,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
 }
 
 class OrderTrackingScreen extends StatelessWidget {
-  final Map<String, dynamic> order;
+  final Orders order;
 
   const OrderTrackingScreen({super.key, required this.order});
 
@@ -426,7 +426,7 @@ class OrderTrackingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Track Order #${order['id']}'),
+        title: Text('Track Order #${order.orderId}'),
       ),
       body: Center(
         child: Column(
@@ -435,7 +435,7 @@ class OrderTrackingScreen extends StatelessWidget {
             const Icon(Icons.local_shipping, size: 60, color: Colors.blue),
             const Gap(20),
             Text(
-              'Your order is ${order['status']}',
+              'Your order is ${_getStatusString(order.status ?? 0)}',
               style: const TextStyle(fontSize: 18),
             ),
             const Gap(20),
@@ -445,10 +445,29 @@ class OrderTrackingScreen extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
             ),
             const Gap(20),
-            const Text('Estimated delivery: May 20, 2023'),
+            const Text('Estimated delivery: Soon'), // Add actual delivery date
           ],
         ),
       ),
     );
+  }
+
+  String _getStatusString(int status) {
+    switch (status) {
+      case 1:
+        return 'Confirmed';
+      case 2:
+        return 'Processing';
+      case 3:
+        return 'On the way';
+      case 4:
+        return 'Completed';
+      case 5:
+        return 'On hold';
+      case 6:
+        return 'Canceled';
+      default:
+        return 'Unknown';
+    }
   }
 }

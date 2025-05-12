@@ -27,7 +27,7 @@ class Urls {
   static const getSettingsUrl = '$baseUrl/general-setting';
   //cart
   static const getCartUrl = '$baseUrl/cart';
-  static const addCartUrl = '$baseUrl/cart/';
+  static const addCartUrl = '$baseUrl/cart';
   static const cartSummeryUrl = '$baseUrl/cart-summary';
 
   //coupons

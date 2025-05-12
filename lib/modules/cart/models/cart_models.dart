@@ -1,25 +1,19 @@
 class CartModel {
-  bool? success;
-  String? message;
-  List<Data>? data;
+  List<Cart>? data;
 
-  CartModel({this.success, this.message, this.data});
+  CartModel({this.data});
 
   CartModel.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Cart>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(Cart.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['success'] = success;
-    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -27,33 +21,39 @@ class CartModel {
   }
 }
 
-class Data {
+class Cart {
   int? id;
   int? productId;
   String? productName;
+  String? featuredImage;
   int? quantity;
-  double? price;
-  double? total;
-  int? shippingCost;
-  String? shippingMethod;
-  String? shippingAddress;
-  String? createdAt;
-  String? updatedAt;
+  dynamic price;
+  String? variation;
+  bool? inWishlist;
+  dynamic hasBulkDiscount;
+  dynamic minPrice;
+  String? maxPrice;
+  int? shippingMethod;
+  dynamic checkoutShipping;
+  String? slug;
 
-  Data({this.id, this.productId, this.productName, this.quantity, this.price, this.total, this.shippingCost, this.shippingMethod, this.shippingAddress, this.createdAt, this.updatedAt});
+  Cart({this.id, this.productId, this.productName, this.featuredImage, this.quantity, this.price, this.variation, this.inWishlist, this.hasBulkDiscount, this.minPrice, this.maxPrice, this.shippingMethod, this.checkoutShipping, this.slug});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Cart.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     productId = json['product_id'];
     productName = json['product_name'];
+    featuredImage = json['featured_image'];
     quantity = json['quantity'];
     price = json['price'];
-    total = json['total'];
-    shippingCost = json['shipping_cost'];
+    variation = json['variation'];
+    inWishlist = json['in_wishlist'];
+    hasBulkDiscount = json['has_bulk_discount'];
+    minPrice = json['min_price'];
+    maxPrice = json['max_price'];
     shippingMethod = json['shipping_method'];
-    shippingAddress = json['shipping_address'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    checkoutShipping = json['checkout_shipping'];
+    slug = json['slug'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,14 +61,17 @@ class Data {
     data['id'] = id;
     data['product_id'] = productId;
     data['product_name'] = productName;
+    data['featured_image'] = featuredImage;
     data['quantity'] = quantity;
     data['price'] = price;
-    data['total'] = total;
-    data['shipping_cost'] = shippingCost;
+    data['variation'] = variation;
+    data['in_wishlist'] = inWishlist;
+    data['has_bulk_discount'] = hasBulkDiscount;
+    data['min_price'] = minPrice;
+    data['max_price'] = maxPrice;
     data['shipping_method'] = shippingMethod;
-    data['shipping_address'] = shippingAddress;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
+    data['checkout_shipping'] = checkoutShipping;
+    data['slug'] = slug;
     return data;
   }
 }

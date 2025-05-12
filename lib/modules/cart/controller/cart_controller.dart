@@ -122,6 +122,6 @@ class CartController extends GetxController {
   // Helper method to calculate total price
   double get totalPrice {
     if (cart.value?.data == null || cart.value!.data!.isEmpty) return 0.0;
-    return cart.value!.data!.fold(0.0, (sum, item) => sum + (item.total ?? 0.0));
+    return cart.value!.data!.fold(0.0, (sum, item) => sum + (item.price ?? 0.0));
   }
 }
