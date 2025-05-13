@@ -320,8 +320,8 @@ class _CartScreenState extends State<CartScreen> {
           IconButton(
             icon: const Icon(Icons.remove, size: 18),
             onPressed: () {
-              if (item.quantity != null && item.quantity! > 1) {
-                _cartController.updateCartItem(item.id!, {'quantity': item.quantity! - 1});
+              if (item.quantity != null && int.parse(item.quantity!) > 1) {
+                _cartController.updateCartItem(item.id!, {'quantity': int.parse(item.quantity!) - 1});
               }
             },
             padding: EdgeInsets.zero,
@@ -338,7 +338,7 @@ class _CartScreenState extends State<CartScreen> {
             icon: const Icon(Icons.add, size: 18),
             onPressed: () {
               if (item.quantity != null) {
-                _cartController.updateCartItem(item.id!, {'quantity': item.quantity! + 1});
+                _cartController.updateCartItem(item.id!, {'quantity': int.parse(item.quantity!) + 1});
               }
             },
             padding: EdgeInsets.zero,

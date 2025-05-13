@@ -23,10 +23,10 @@ class CartModel {
 
 class Cart {
   int? id;
-  int? productId;
+  String? productId;
   String? productName;
   String? featuredImage;
-  int? quantity;
+  String? quantity;
   dynamic price;
   String? variation;
   bool? inWishlist;

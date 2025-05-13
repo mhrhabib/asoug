@@ -1,5 +1,5 @@
 class ProfileModel {
-  int? id;
+  dynamic id;
   String? name;
   String? email;
   String? emailVerifiedAt;
@@ -11,7 +11,7 @@ class ProfileModel {
   dynamic businessType;
   dynamic taxNumber;
   dynamic commercialRegistrationNumber;
-  int? isActive;
+  String? isActive;
   String? avatarUrl;
 
   ProfileModel({this.id, this.name, this.email, this.emailVerifiedAt, this.createdAt, this.updatedAt, this.phone, this.avatar, this.otp, this.businessType, this.taxNumber, this.commercialRegistrationNumber, this.isActive, this.avatarUrl});

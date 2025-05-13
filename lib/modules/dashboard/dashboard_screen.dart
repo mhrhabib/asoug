@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-
 import '../address/address_screen.dart';
 import '../help&support/help_support_screen.dart';
 import '../orders/all_orders_screen.dart';
@@ -89,7 +88,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    // final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenWidth < 360;
 
     return Scaffold(

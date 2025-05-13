@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
-
 import '../../../core/common/widgets/custom_checkbox_button.dart';
 import '../../../core/common/widgets/custom_elevated_button.dart';
 import '../../../core/common/widgets/custom_text_form_field.dart';

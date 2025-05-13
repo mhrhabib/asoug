@@ -331,8 +331,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildCartSummary() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 360;
+    // final screenWidth = MediaQuery.of(context).size.width;
+    // final isSmallScreen = screenWidth < 360;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

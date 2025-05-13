@@ -1,115 +1,99 @@
 class LoginModel {
-  final bool success;
-  final String message;
-  final LoginData data;
+  bool? success;
+  String? message;
+  Data? data;
 
-  LoginModel({
-    required this.success,
-    required this.message,
-    required this.data,
-  });
+  LoginModel({this.success, this.message, this.data});
 
-  factory LoginModel.fromJson(Map<String, dynamic> json) {
-    return LoginModel(
-      success: json['success'] as bool,
-      message: json['message'] as String,
-      data: LoginData.fromJson(json['data'] as Map<String, dynamic>),
-    );
+  LoginModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.toJson(),
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
   }
 }
 
-class LoginData {
-  final String token;
-  final User user;
+class Data {
+  String? token;
+  User? user;
 
-  LoginData({
-    required this.token,
-    required this.user,
-  });
+  Data({this.token, this.user});
 
-  factory LoginData.fromJson(Map<String, dynamic> json) {
-    return LoginData(
-      token: json['token'] as String,
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    token = json['token'];
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'user': user.toJson(),
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['token'] = token;
+    if (user != null) {
+      data['user'] = user!.toJson();
+    }
+    return data;
   }
 }
 
 class User {
-  final int id;
-  final String name;
-  final String email;
-  final String? emailVerifiedAt;
-  final String createdAt;
-  final String updatedAt;
-  final String phone;
-  final String? avatar;
-  final String? businessType;
-  final String? taxNumber;
-  final String? commercialRegistrationNumber;
-  final int isActive;
+  int? id;
+  String? name;
+  String? email;
+  String? emailVerifiedAt;
+  String? createdAt;
+  String? updatedAt;
+  String? phone;
+  String? avatar;
+  dynamic otp;
+  dynamic businessType;
+  dynamic taxNumber;
+  dynamic commercialRegistrationNumber;
+  String? isActive;
+  String? avatarUrl;
 
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.emailVerifiedAt,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.phone,
-    this.avatar,
-    this.businessType,
-    this.taxNumber,
-    this.commercialRegistrationNumber,
-    required this.isActive,
-  });
+  User({this.id, this.name, this.email, this.emailVerifiedAt, this.createdAt, this.updatedAt, this.phone, this.avatar, this.otp, this.businessType, this.taxNumber, this.commercialRegistrationNumber, this.isActive, this.avatarUrl});
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      emailVerifiedAt: json['email_verified_at'] as String?,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
-      phone: json['phone'] as String,
-      avatar: json['avatar'] as String?,
-      businessType: json['business_type'] as String?,
-      taxNumber: json['tax_number'] as String?,
-      commercialRegistrationNumber: json['commercial_registration_number'] as String?,
-      isActive: json['is_active'] as int,
-    );
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    email = json['email'];
+    emailVerifiedAt = json['email_verified_at'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    phone = json['phone'];
+    avatar = json['avatar'];
+    otp = json['otp'];
+    businessType = json['business_type'];
+    taxNumber = json['tax_number'];
+    commercialRegistrationNumber = json['commercial_registration_number'];
+    isActive = json['is_active'];
+    avatarUrl = json['avatarUrl'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'email_verified_at': emailVerifiedAt,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'phone': phone,
-      'avatar': avatar,
-      'business_type': businessType,
-      'tax_number': taxNumber,
-      'commercial_registration_number': commercialRegistrationNumber,
-      'is_active': isActive,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['email'] = email;
+    data['email_verified_at'] = emailVerifiedAt;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['phone'] = phone;
+    data['avatar'] = avatar;
+    data['otp'] = otp;
+    data['business_type'] = businessType;
+    data['tax_number'] = taxNumber;
+    data['commercial_registration_number'] = commercialRegistrationNumber;
+    data['is_active'] = isActive;
+    data['avatarUrl'] = avatarUrl;
+    return data;
   }
 }

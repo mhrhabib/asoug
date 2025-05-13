@@ -116,7 +116,7 @@ class CartController extends GetxController {
   // Helper method to calculate total items in cart
   int get totalItems {
     if (cart.value?.data == null || cart.value!.data!.isEmpty) return 0;
-    return cart.value!.data!.fold(0, (sum, item) => sum + (item.quantity ?? 0));
+    return cart.value!.data!.fold<int>(0, (int sum, item) => sum + ((item.quantity ?? 0) as int));
   }
 
   // Helper method to calculate total price

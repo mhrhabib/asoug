@@ -1,12 +1,10 @@
 import 'package:asoug/modules/dashboard/dashboard_screen.dart';
 import 'package:asoug/modules/help&support/help_support_screen.dart';
-import 'package:asoug/modules/home/screens/home_screens.dart';
 import 'package:asoug/modules/main/main_screen.dart';
 import 'package:asoug/modules/mediaCenter/media_center_screen.dart';
 import 'package:asoug/modules/ourTeam/our_team_screen.dart';
 import 'package:asoug/modules/products/featured_product_screen.dart';
 import 'package:asoug/modules/products/product_list_screen.dart';
-import 'package:asoug/modules/queries/queries_screen.dart';
 import 'package:asoug/modules/supplier/supplier_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

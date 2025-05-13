@@ -2,7 +2,6 @@ import 'package:asoug/modules/splash/splash_screen.dart';
 import 'package:asoug/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 void main() {
   runApp(const MyApp());

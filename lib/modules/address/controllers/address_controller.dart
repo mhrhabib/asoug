@@ -31,7 +31,7 @@ class AddressController extends GetxController {
   Future<void> addAddress(Map<String, dynamic> addressData) async {
     try {
       isLoading.value = true;
-      var response = await _repository.addAddress({
+      await _repository.addAddress({
         'name': addressData['name'],
         'email': addressData['email'],
         'phone': addressData['phone'],
@@ -44,9 +44,7 @@ class AddressController extends GetxController {
         'is_default': addressData['isDefault'] == 'true',
       });
 
-      if (response != null) {
-        await fetchAddresses();
-      }
+      await fetchAddresses();
 
       errorMessage.value = '';
       Get.back();
@@ -62,7 +60,7 @@ class AddressController extends GetxController {
   Future<void> updateAddress(int id, Map<String, dynamic> addressData) async {
     try {
       isLoading.value = true;
-      final updatedAddress = await _repository.updateAddress(id, {
+      await _repository.updateAddress(id, {
         'name': addressData['name'],
         'email': addressData['email'],
         'phone': addressData['phone'],

@@ -1,6 +1,5 @@
 import 'package:asoug/modules/products/models/product_details_model.dart';
 import 'package:asoug/modules/products/repo/product_repo.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/product_model.dart';
 

@@ -6,7 +6,6 @@ import 'package:asoug/modules/home/screens/home_landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:dio/dio.dart' as dio;
 import '../../../core/utils/storage.dart';
 import '../forgotPassword/reset_password_screen.dart';
 import '../repository/auth_repository.dart';
@@ -43,7 +42,7 @@ class AuthController extends GetxController {
       if (response.statusCode == 200) {
         var loginData = LoginModel.fromJson(response.data);
         // Save token to storage
-        await storage.write('token', loginData.data.token);
+        await storage.write('token', loginData.data!.token!);
         print(">>>>>>> TOKEN >>>>>>>${storage.read('token')}");
         toast("Login successful", bgColor: Colors.green);
         // Navigate to home screen

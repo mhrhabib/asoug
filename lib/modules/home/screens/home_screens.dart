@@ -1,9 +1,7 @@
 import 'package:asoug/modules/home/repo/brand_repo.dart';
-import 'package:asoug/modules/products/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-
 import '../controllers/brand_controller.dart';
 import '../models/list_item.dart';
 import '../widgets/custom_app_bar.dart';

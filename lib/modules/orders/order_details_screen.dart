@@ -14,9 +14,9 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   Widget build(BuildContext context) {
-    final firstCompany = widget.order.companies?.firstOrNull;
-    final firstProduct = firstCompany?.products?.firstOrNull;
-    final screenWidth = MediaQuery.of(context).size.width;
+    // final firstCompany = widget.order.companies?.firstOrNull;
+    // final firstProduct = firstCompany?.products?.firstOrNull;
+    //final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(

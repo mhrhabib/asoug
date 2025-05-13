@@ -47,10 +47,7 @@ class CartRepository {
       print(response.statusCode);
       print(response.statusMessage);
 
-      if (response is Response) {
-        return CartModel.fromJson(response.data);
-      }
-      throw Exception('Failed to add to cart');
+      return CartModel.fromJson(response.data);
     } catch (e) {
       rethrow;
     }

@@ -34,7 +34,7 @@ class ProductModel {
 class Product {
   int? id;
   String? name;
-  int? hasBulkDiscount;
+  String? hasBulkDiscount;
   dynamic minPrice;
   String? maxPrice;
   String? rating;
@@ -97,7 +97,7 @@ class Meta {
   int? currentPage;
   int? from;
   int? lastPage;
-  List<Urls>? links;
+  List<Link>? links;
   String? path;
   int? perPage;
   int? to;
@@ -110,9 +110,9 @@ class Meta {
     from = json['from'];
     lastPage = json['last_page'];
     if (json['links'] != null) {
-      links = <Urls>[];
+      links = <Link>[];
       json['links'].forEach((v) {
-        links!.add(Urls.fromJson(v));
+        links!.add(Link.fromJson(v));
       });
     }
     path = json['path'];
@@ -137,14 +137,14 @@ class Meta {
   }
 }
 
-class Urls {
+class Link {
   String? url;
   String? label;
   bool? active;
 
-  Urls({this.url, this.label, this.active});
+  Link({this.url, this.label, this.active});
 
-  Urls.fromJson(Map<String, dynamic> json) {
+  Link.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     label = json['label'];
     active = json['active'];

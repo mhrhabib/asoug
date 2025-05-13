@@ -26,25 +26,25 @@ class ProductDetailsModel {
 
 class Data {
   int? id;
-  int? productType;
+  String? productType;
   dynamic variationId;
   String? name;
   String? featuredImage;
   List<Image>? images;
-  List<Attribute>? attributes;
+  List<dynamic>? attributes;
   Company? company;
-  int? hasBulkDiscount;
+  String? hasBulkDiscount;
   dynamic minPrice;
   String? maxPrice;
-  List<Price>? prices;
-  int? minOrderQty;
+  List<dynamic>? prices;
+  String? minOrderQty;
   String? unit;
-  int? hasVariations;
-  int? isStockUnlimited;
+  String? hasVariations;
+  String? isStockUnlimited;
   int? inStock;
   String? description;
   String? rating;
-  List<Review>? reviews;
+  List<dynamic>? reviews;
   Ratings? ratings;
   int? totalSales;
   int? totalWishlist;
@@ -92,12 +92,12 @@ class Data {
         name: json["name"],
         featuredImage: json["featured_image"],
         images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
-        attributes: List<Attribute>.from(json["attributes"].map((x) => Attribute.fromJson(x))),
+        attributes: List<dynamic>.from(json["attributes"].map((x) => x)),
         company: Company.fromJson(json["company"]),
         hasBulkDiscount: json["has_bulk_discount"],
         minPrice: json["min_price"],
         maxPrice: json["max_price"],
-        prices: List<Price>.from(json["prices"].map((x) => Price.fromJson(x))),
+        prices: List<dynamic>.from(json["prices"].map((x) => x)),
         minOrderQty: json["min_order_qty"],
         unit: json["unit"],
         hasVariations: json["has_variations"],
@@ -105,7 +105,7 @@ class Data {
         inStock: json["in_stock"],
         description: json["description"],
         rating: json["rating"],
-        reviews: List<Review>.from(json["reviews"].map((x) => Review.fromJson(x))),
+        reviews: List<dynamic>.from(json["reviews"].map((x) => x)),
         ratings: Ratings.fromJson(json["ratings"]),
         totalSales: json["total_sales"],
         totalWishlist: json["total_wishlist"],
@@ -123,12 +123,12 @@ class Data {
         "name": name,
         "featured_image": featuredImage,
         "images": List<dynamic>.from(images!.map((x) => x.toJson())),
-        "attributes": List<dynamic>.from(attributes!.map((x) => x.toJson())),
+        "attributes": List<dynamic>.from(attributes!.map((x) => x)),
         "company": company!.toJson(),
         "has_bulk_discount": hasBulkDiscount,
         "min_price": minPrice,
         "max_price": maxPrice,
-        "prices": List<dynamic>.from(prices!.map((x) => x.toJson())),
+        "prices": List<dynamic>.from(prices!.map((x) => x)),
         "min_order_qty": minOrderQty,
         "unit": unit,
         "has_variations": hasVariations,
@@ -136,7 +136,7 @@ class Data {
         "in_stock": inStock,
         "description": description,
         "rating": rating,
-        "reviews": List<dynamic>.from(reviews!.map((x) => x.toJson())),
+        "reviews": List<dynamic>.from(reviews!.map((x) => x)),
         "ratings": ratings!.toJson(),
         "total_sales": totalSales,
         "total_wishlist": totalWishlist,
@@ -148,34 +148,10 @@ class Data {
       };
 }
 
-class Attribute {
-  int? attributeId;
-  String? attributeName;
-  String? value;
-
-  Attribute({
-    this.attributeId,
-    this.attributeName,
-    this.value,
-  });
-
-  factory Attribute.fromJson(Map<String, dynamic> json) => Attribute(
-        attributeId: json["attribute_id"],
-        attributeName: json["attribute_name"],
-        value: json["value"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "attribute_id": attributeId,
-        "attribute_name": attributeName,
-        "value": value,
-      };
-}
-
 class Company {
   String? name;
   String? country;
-  int? rating;
+  String? rating;
   String? slug;
   List<Product>? products;
 
@@ -207,7 +183,7 @@ class Company {
 class Product {
   int? id;
   String? name;
-  int? hasBulkDiscount;
+  String? hasBulkDiscount;
   dynamic minPrice;
   String? maxPrice;
   String? rating;
@@ -276,34 +252,6 @@ class Image {
       };
 }
 
-class Price {
-  int? price;
-  String? currency;
-  String? validFrom;
-  String? validUntil;
-
-  Price({
-    this.price,
-    this.currency,
-    this.validFrom,
-    this.validUntil,
-  });
-
-  factory Price.fromJson(Map<String, dynamic> json) => Price(
-        price: json["price"],
-        currency: json["currency"],
-        validFrom: json["valid_from"],
-        validUntil: json["valid_until"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "price": price,
-        "currency": currency,
-        "valid_from": validFrom,
-        "valid_until": validUntil,
-      };
-}
-
 class Ratings {
   int? rating1;
   int? rating2;
@@ -333,29 +281,5 @@ class Ratings {
         "rating3": rating3,
         "rating4": rating4,
         "rating5": rating5,
-      };
-}
-
-class Review {
-  int? userId;
-  int? rating;
-  String? comment;
-
-  Review({
-    this.userId,
-    this.rating,
-    this.comment,
-  });
-
-  factory Review.fromJson(Map<String, dynamic> json) => Review(
-        userId: json["user_id"],
-        rating: json["rating"],
-        comment: json["comment"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "user_id": userId,
-        "rating": rating,
-        "comment": comment,
       };
 }

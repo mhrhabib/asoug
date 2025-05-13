@@ -294,7 +294,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                           _ProductActionBar(
                             onAddToCart: _addToCart,
                             quantity: _quantity,
-                            minOrderQty: product.minOrderQty ?? 1,
+                            minOrderQty: product.minOrderQty ?? '1',
                             onQuantityChanged: (newQuantity) {
                               setState(() {
                                 _quantity = newQuantity;
@@ -520,7 +520,7 @@ class _MainProductImageState extends State<_MainProductImage> {
 class _ProductActionBar extends StatelessWidget {
   final Function() onAddToCart;
   final int quantity;
-  final int minOrderQty;
+  final String minOrderQty;
   final Function(int) onQuantityChanged;
 
   const _ProductActionBar({
@@ -550,7 +550,7 @@ class _ProductActionBar extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    if (quantity > minOrderQty) {
+                    if (quantity > int.parse(minOrderQty)) {
                       onQuantityChanged(quantity - 1);
                     }
                   },
