@@ -1,9 +1,14 @@
+import 'package:asoug/modules/home/screens/home_screens.dart';
+import 'package:asoug/modules/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 import '../address/add_new_address_screen.dart';
+import '../address/controllers/address_controller.dart';
+import '../address/models/address_model.dart';
+import '../orders/controllers/order_controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -13,8 +18,64 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  final OrderController orderController = Get.put(OrderController());
+  final AddressController addressController = Get.put(AddressController());
+
   String _selectedPaymentMethod = 'credit_card';
   bool _showCardDetails = true;
+  int? _selectedShippingAddressId;
+  int? _selectedBillingAddressId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Set default addresses if available
+    if (addressController.addressModel.isNotEmpty) {
+      final defaultAddress = addressController.addressModel.firstWhere(
+        (address) => address.isDefault == 1,
+        orElse: () => addressController.addressModel.first,
+      );
+      _selectedShippingAddressId = defaultAddress.id;
+      _selectedBillingAddressId = defaultAddress.id;
+    }
+  }
+
+  void _placeOrder() async {
+    if (_selectedShippingAddressId == null || _selectedBillingAddressId == null) {
+      Get.snackbar('Error', 'Please select shipping and billing addresses');
+      return;
+    }
+
+    try {
+      // Map payment method selection to the expected ID
+      int paymentMethodId;
+      switch (_selectedPaymentMethod) {
+        case 'cash_on_delivery':
+          paymentMethodId = 1;
+          break;
+        case 'credit_card':
+          paymentMethodId = 2;
+          break;
+        case 'bank_transfer':
+          paymentMethodId = 3;
+          break;
+        default:
+          paymentMethodId = 1;
+      }
+
+      await orderController.createOrder(
+        shippingAddress: _selectedShippingAddressId!,
+        billingAddress: _selectedBillingAddressId!,
+        paymentMethod: paymentMethodId,
+        shippingMethod: 1, // Assuming standard shipping
+        couponCode: '', // Add coupon logic if needed
+      );
+
+      Get.offAll(() => OrderConfirmationScreen());
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to place order: ${e.toString()}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,17 +112,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               onAction: () => Get.to(() => const AddNewAddressScreen()),
             ),
             const Gap(8),
-            _buildAddressCard(
-              name: 'John Doe',
-              address: '123 Main Street, New York, USA',
-              isDefault: true,
-            ),
-            const Gap(8),
-            _buildAddressCard(
-              name: 'John Smith',
-              address: '456 King Fahd Road, Riyadh, Saudi Arabia',
-              isDefault: false,
-            ),
+            // Replace your hardcoded address cards with this:
+            Obx(() {
+              if (addressController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (addressController.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Text(addressController.errorMessage.value),
+                );
+              }
+
+              if (addressController.addressModel.isEmpty) {
+                return const Center(child: Text('No addresses found'));
+              }
+
+              return Column(
+                children: [
+                  ...addressController.addressModel.map(
+                    (address) => Column(
+                      children: [
+                        _buildAddressCard(
+                          address: address,
+                          isDefault: address.isDefault == 1,
+                        ),
+                        const Gap(8),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }),
             const Gap(16),
 
             // Payment Method Section
@@ -81,28 +163,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const Gap(24),
 
             // Place Order Button
-            SizedBox(
-              width: buttonWidth,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6606),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            // Modify your Place Order button:
+            Obx(() {
+              if (orderController.isCreatingOrder.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return SizedBox(
+                width: buttonWidth,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6606),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                onPressed: _placeOrder,
-                child: Text(
-                  'Place Order',
-                  style: TextStyle(
-                    fontSize: isSmallScreen ? 16 : 18,
-                    fontWeight: FontWeight.bold,
+                  onPressed: _placeOrder,
+                  child: Text(
+                    'Place Order',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
             const Gap(24),
           ],
         ),
@@ -150,20 +239,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildAddressCard({
-    required String name,
-    required String address,
+    required Address address,
     required bool isDefault,
   }) {
+    final isSelected = _selectedShippingAddressId == address.id;
+
     return GestureDetector(
       onTap: () {
-        // Handle address selection
+        setState(() {
+          _selectedShippingAddressId = address.id;
+          _selectedBillingAddressId = address.id;
+        });
       },
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(
+            color: isSelected ? Colors.orange : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,7 +267,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Row(
               children: [
                 Text(
-                  name,
+                  address.name ?? 'No name',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -201,7 +297,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             const Gap(4),
             Text(
-              address,
+              '${address.address}, ${address.city}, ${address.countryName}',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -386,11 +482,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
-
-  void _placeOrder() {
-    // Handle place order logic
-    Get.offAll(() => OrderConfirmationScreen()); // Navigate to confirmation screen
-  }
 }
 
 class OrderConfirmationScreen extends StatelessWidget {
@@ -411,7 +502,7 @@ class OrderConfirmationScreen extends StatelessWidget {
             ),
             const Gap(20),
             ElevatedButton(
-              onPressed: () => Get.offAllNamed('/home'),
+              onPressed: () => Get.offAll(() => const MainScreen()),
               child: const Text('Continue Shopping'),
             ),
           ],

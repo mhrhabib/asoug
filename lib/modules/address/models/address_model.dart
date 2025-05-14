@@ -26,15 +26,15 @@ class Address {
   String? name;
   String? email;
   String? phone;
-  String? address;
-  String? address2;
-  int? country;
+  dynamic address;
+  dynamic address2;
+  dynamic country;
   String? countryName;
-  int? state;
+  dynamic state;
   String? stateName;
-  String? city;
-  String? zipCode;
-  int? isDefault;
+  dynamic city;
+  dynamic zipCode;
+  String? isDefault;
 
   Address({this.id, this.name, this.email, this.phone, this.address, this.address2, this.country, this.countryName, this.state, this.stateName, this.city, this.zipCode, this.isDefault});
 

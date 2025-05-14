@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/urls.dart' as network;
@@ -46,20 +47,21 @@ class OrderRepository {
     required int shippingMethod,
     String couponCode = '',
   }) async {
+    var payload = {
+      'shipping_address': shippingAddress,
+      'billing_address': billingAddress,
+      'payment_method': paymentMethod,
+      'shipping_method': shippingMethod,
+    };
+    print(payload);
     try {
-      final response = await BaseClient.post(
+      dio.Response response = await BaseClient.post(
         url: network.Urls.getOrdersUrl,
-        payload: {
-          'shipping_address': shippingAddress,
-          'billing_address': billingAddress,
-          'payment_method': paymentMethod,
-          'shipping_method': shippingMethod,
-          'coupon_code': couponCode,
-        },
-        // headers: buyerHeaders,
+        payload: payload,
+        headers: buyerHeaders,
       );
 
-      if (response is Response) {
+      if (response.statusCode == 200) {
         return OrderModel.fromJson(response.data);
       }
       throw Exception('Failed to create order');
