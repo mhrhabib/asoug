@@ -40,6 +40,14 @@ class Urls {
 
   //services
   static const getServicesUrl = '$baseUrl/services';
+  static const getJoinOurTeamUrl = '$baseUrl/join-our-team';
+  static const getMediaUrl = '$baseUrl/media';
+  static const homeBannerUrl = '$baseUrl/home-banner';
   //about us
   static const aboutUsUrl = '$baseUrl/about-us';
+
+  // media center
+  static const getOurMission = '$baseUrl/our-mission';
+  static const courseAndPrograms = '$baseUrl/course-and-programs';
+  static const getOurGoals = '$baseUrl/our-goals';
 }

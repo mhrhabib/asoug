@@ -1,4 +1,6 @@
+import 'package:asoug/core/utils/storage.dart';
 import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
+import 'package:asoug/modules/home/screens/home_landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,9 +16,13 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     Future.microtask(() {
       // Simulate a delay for the splash screen
-      Future.delayed(const Duration(seconds: 3), () {
-        Get.off(() => SignInScreen());
-      });
+      if (storage.read('token') != null) {
+        // If the user is already logged in, navigate to the home screen
+        Get.off((() => const HomeLandingScreen()));
+      } else {
+        // If the user is not logged in, navigate to the sign-in screen
+        Get.offAll(() => SignInScreen());
+      }
     });
     super.initState();
   }

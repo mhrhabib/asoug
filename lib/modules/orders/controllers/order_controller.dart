@@ -67,7 +67,7 @@ class OrderController extends GetxController {
       errorMessage.value = '';
 
       final result = await _repository.createOrder(
-        shippingAddress: shippingAddress,
+        shippingAddress: 1,
         billingAddress: billingAddress,
         paymentMethod: paymentMethod,
         shippingMethod: shippingMethod,

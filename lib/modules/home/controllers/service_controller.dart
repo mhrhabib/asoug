@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import '../models/home_banner_model.dart';
+import '../models/join_our_team_model.dart';
+import '../models/media_center_model.dart';
 import '../models/services_model.dart';
 import '../repo/services_repo.dart';
 
@@ -15,7 +18,27 @@ class ServicesController extends GetxController {
   @override
   void onInit() {
     fetchServices();
+    fetchJoinOurTeamData();
+    fetchMediaCenterData();
+    fetchHomeBanner();
     super.onInit();
+  }
+
+  final bannerData = Rxn<HomeBannerModel>();
+
+  Future<void> fetchHomeBanner() async {
+    try {
+      isLoading(true);
+      errorMessage('');
+
+      final data = await _repository.getHomeBanner();
+      bannerData(data);
+    } catch (e) {
+      errorMessage('Failed to load banner data: ${e.toString()}');
+      bannerData(null);
+    } finally {
+      isLoading(false);
+    }
   }
 
   Future<void> fetchServices({int page = 1}) async {
@@ -34,11 +57,7 @@ class ServicesController extends GetxController {
       } else {
         // Append new data to existing services
         services.update((val) {
-          val?.data?.data?.addAll(result.data?.data ?? []);
-          val?.data?.currentPage = result.data?.currentPage;
-          val?.data?.nextPageUrl = result.data?.nextPageUrl;
-          val?.data?.prevPageUrl = result.data?.prevPageUrl;
-          val?.data?.lastPage = result.data?.lastPage;
+          val?.data?.addAll(result.data ?? []);
         });
       }
 
@@ -52,9 +71,48 @@ class ServicesController extends GetxController {
     }
   }
 
-  void loadMoreServices() {
-    if (!isLoadingMore.value && services.value?.data!.nextPageUrl != null) {
-      fetchServices(page: currentPage.value + 1);
+  final isJoinLoading = false.obs;
+  final joinOurTeamData = Rxn<JoinOurTeamModel>();
+
+  Future<void> fetchJoinOurTeamData() async {
+    try {
+      isJoinLoading(true);
+      errorMessage('');
+
+      final data = await ServicesRepository().getJoinOurTeam();
+      joinOurTeamData(data);
+    } catch (e) {
+      errorMessage('Failed to load data: $e');
+      joinOurTeamData(null);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  final mediaCenterData = Rxn<MediaCenterModel>();
+
+  final featuredMedia = <Media>[].obs;
+  final allMedia = <Media>[].obs;
+
+  Future<void> fetchMediaCenterData() async {
+    try {
+      isLoading(true);
+      errorMessage('');
+
+      final data = await _repository.getMediaCenterData();
+      mediaCenterData(data);
+
+      if (data.data != null) {
+        allMedia.assignAll(data.data!);
+        featuredMedia.assignAll(data.data!.where((item) => item.isFeatured == "1").toList());
+      }
+    } catch (e) {
+      errorMessage('Failed to load media data: ${e.toString()}');
+      mediaCenterData(null);
+      featuredMedia.clear();
+      allMedia.clear();
+    } finally {
+      isLoading(false);
     }
   }
 }
