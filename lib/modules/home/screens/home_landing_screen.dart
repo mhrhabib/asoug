@@ -373,7 +373,7 @@ Widget _buildMediaCard({required Media item}) {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: item.user?.avatarUrl != null ? NetworkImage(item.user!.avatarUrl!) : const NetworkImage('https://randomuser.me/api/portraits/men/1.jpg'),
+                backgroundImage: item.user?.avatarUrl != null ? NetworkImage(item.user!.avatarUrl!) : const NetworkImage('https://picsum.photos/404'),
               ),
               const Gap(16),
               Column(

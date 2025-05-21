@@ -1,7 +1,9 @@
-import 'package:asoug/modules/supplier/supplier_login_screen.dart';
-import 'package:asoug/modules/supplier/suppliers_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'controllers/supplier_controller.dart';
+import 'models/suppliers_model.dart';
+import 'supplier_login_screen.dart';
+import 'suppliers_home_screen.dart';
 
 class SupplierListScreen extends StatefulWidget {
   const SupplierListScreen({super.key});
@@ -11,34 +13,27 @@ class SupplierListScreen extends StatefulWidget {
 }
 
 class _SupplierListScreenState extends State<SupplierListScreen> {
-  // Sample list of suppliers
-  final List<Supplier> suppliers = [
-    Supplier(
-      name: 'ABC Suppliers',
-      rating: 4.5,
-      imageUrl: 'https://picsum.photos/601',
-    ),
-    Supplier(
-      name: 'XYZ Distributors',
-      rating: 4.2,
-      imageUrl: 'https://picsum.photos/602',
-    ),
-    Supplier(
-      name: 'Global Trading',
-      rating: 4.8,
-      imageUrl: 'https://picsum.photos/603',
-    ),
-    Supplier(
-      name: 'Premium Goods Co.',
-      rating: 4.0,
-      imageUrl: 'https://picsum.photos/604',
-    ),
-    Supplier(
-      name: 'Quality Products Ltd.',
-      rating: 4.7,
-      imageUrl: 'https://picsum.photos/605',
-    ),
-  ];
+  final SupplierController controller = Get.put(SupplierController());
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+      controller.loadMoreSuppliers();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +46,17 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: CustomSearchDelegate(),
+                delegate: SupplierSearchDelegate(controller: controller),
               );
             },
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor, shape: StadiumBorder()),
-            child: Text(
-              'login',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: const StadiumBorder(),
+            ),
+            child: const Text(
+              'Login',
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
@@ -67,102 +65,149 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: suppliers.length,
-        itemBuilder: (context, index) {
-          final supplier = suppliers[index];
-          return Card(
-            margin: const EdgeInsets.all(8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  Row(
+      body: Obx(() {
+        if (controller.isLoading.value && controller.suppliersData.value == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.errorMessage.value.isNotEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(controller.errorMessage.value),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => controller.fetchSuppliers(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final suppliers = controller.suppliersData.value?.data?.data ?? [];
+
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchSuppliers(),
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: suppliers.length + (controller.hasMore.value ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index >= suppliers.length) {
+                return const Center(
+                    child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                ));
+              }
+
+              final supplier = suppliers[index];
+              return SupplierCard(supplier: supplier);
+            },
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class SupplierCard extends StatelessWidget {
+  final Supplier supplier;
+
+  const SupplierCard({required this.supplier, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                // Supplier logo
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: supplier.logo != null ? NetworkImage('https://demo.asoug.com/uploads/all/${supplier.logo!}') : const NetworkImage('https://via.placeholder.com/150'),
+                ),
+                const SizedBox(width: 16),
+                // Supplier info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Supplier image
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(supplier.imageUrl),
+                      Text(
+                        supplier.name ?? 'No Name',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      // Supplier name and rating
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 4),
+                      if (supplier.businessType != null)
+                        Text(
+                          supplier.businessType!,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                      if (supplier.rating != null)
+                        Row(
                           children: [
-                            Text(
-                              supplier.name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            const Text('Rating:'),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 16,
                             ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Text('Rating:'),
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  supplier.rating.toString(),
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ],
+                            const SizedBox(width: 4),
+                            Text(
+                              supplier.rating!,
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
-                      ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Visit Company button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.to(() => SupplierHomePage());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Visit Company',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Visit Company button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.to(() => SupplierHomePage(slug: supplier.slug!));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ],
+                ),
+                child: const Text(
+                  'Visit Company',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
 }
 
-// Supplier model class
-class Supplier {
-  final String name;
-  final double rating;
-  final String imageUrl;
+class SupplierSearchDelegate extends SearchDelegate {
+  final SupplierController controller;
 
-  Supplier({
-    required this.name,
-    required this.rating,
-    required this.imageUrl,
-  });
-}
+  SupplierSearchDelegate({required this.controller});
 
-// Placeholder for the search delegate
-class CustomSearchDelegate extends SearchDelegate {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -187,11 +232,33 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container(); // Implement search results
+    return _buildSearchResults();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container(); // Implement search suggestions
+    return _buildSearchResults();
+  }
+
+  Widget _buildSearchResults() {
+    final filteredSuppliers = controller.suppliersData.value?.data?.data?.where((supplier) => supplier.name?.toLowerCase().contains(query.toLowerCase()) ?? false).toList() ?? [];
+
+    return ListView.builder(
+      itemCount: filteredSuppliers.length,
+      itemBuilder: (context, index) {
+        final supplier = filteredSuppliers[index];
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundImage: supplier.logo != null ? NetworkImage(supplier.logo!) : const NetworkImage('https://via.placeholder.com/150'),
+          ),
+          title: Text(supplier.name ?? 'No Name'),
+          subtitle: Text(supplier.businessType ?? ''),
+          onTap: () {
+            close(context, null);
+            Get.to(() => SupplierHomePage(slug: supplier.slug!));
+          },
+        );
+      },
+    );
   }
 }

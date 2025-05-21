@@ -50,4 +50,15 @@ class Urls {
   static const getOurMission = '$baseUrl/our-mission';
   static const courseAndPrograms = '$baseUrl/course-and-programs';
   static const getOurGoals = '$baseUrl/our-goals';
+  static const getOurTeam = '$baseUrl/our-team';
+  //suppliers
+  static const getSuppliersUrl = '$baseUrl/suppliers';
+  static const getSupplierDetailsUrl = '$baseUrl/supplier-details';
+  static const getSupplierProductsUrl = '$baseUrl/supplier-products/';
+
+  //supplier login page
+  static const supplierBanner = '$baseUrl/supplier-banner';
+  static const supplierWhyUs = '$baseUrl/why-us';
+  static const supplierProductVideo = '$baseUrl/product-video';
+  static const supplierFaqs = '$baseUrl/supplier-faqs';
 }
