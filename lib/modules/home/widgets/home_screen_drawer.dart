@@ -161,7 +161,7 @@ class HomeScreenWithDrawer extends StatelessWidget {
                 _buildDrawerTile(
                   context,
                   icon: Icons.help,
-                  title: 'hlp & support',
+                  title: 'help & support',
                   onTap: () {
                     Get.to(() => HelpSupportScreen());
                     // Navigate to help

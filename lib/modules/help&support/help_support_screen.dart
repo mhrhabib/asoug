@@ -2,141 +2,161 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-
-import '../queries/queries_details_screen.dart';
+import 'controllers/support_ticket_controller.dart';
 import 'create_ticket_screen.dart';
+import 'support_ticket_details_screen.dart';
 
-class HelpSupportScreen extends StatefulWidget {
-  const HelpSupportScreen({super.key});
+class HelpSupportScreen extends StatelessWidget {
+  final SupportTicketController controller = Get.put(SupportTicketController());
 
-  @override
-  State<HelpSupportScreen> createState() => _HelpSupportScreenState();
-}
+  HelpSupportScreen({super.key});
 
-class _HelpSupportScreenState extends State<HelpSupportScreen> {
-  final queryList = [
-    'Soft PU Leather Shoulder Handbag Multi Pocket ...',
-    '450/750V multicore flexible control cable kvv ....',
-    'Power transformer 50kva new',
-    'Saipwell High Quality Customized Complete Control....',
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Help & Support'),
+        title: const Text('Help & Support'),
         actions: [
           SvgPicture.asset('assets/icons/settings.svg'),
-          Gap(12),
+          const Gap(12),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: Text(
-                'You can send query by visiting the seller contact page',
-                style: TextStyle(fontSize: 16),
-              ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(() => CreateTicketScreen()),
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: Obx(() {
+        if (controller.isLoadingTickets.value && controller.supportTicketsList.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.ticketsError.isNotEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(controller.ticketsError.value),
+                ElevatedButton(
+                  onPressed: controller.fetchSupportTickets,
+                  child: const Text('Retry'),
+                ),
+              ],
             ),
-            Container(
-              padding: EdgeInsets.all(12),
-              // margin: EdgeInsets.symmetric(horizontal: 12),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color(0xFFE8F9FF),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'S.No Product Name',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    'Action',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListView.separated(
-              separatorBuilder: (context, index) {
-                return Container(
-                  height: 1,
-                  margin: EdgeInsets.only(left: 12),
-                  width: MediaQuery.sizeOf(context).width * .9,
-                  color: Colors.grey.shade300,
-                );
-              },
-              itemCount: queryList.length,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('${index + 1}'),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .60,
-                        child: Text(queryList[index]),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => QueriesDetailsScreen());
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'View',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            Gap(20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
-                    Get.to(() => CreateTicketScreen());
-                  },
-                  child: Text('Create Support Ticket'),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 28,
+                child: Text(
+                  'You can create support tickets for any issues you encounter',
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              const Gap(12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F9FF),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Ticket #',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'Status',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => controller.fetchSupportTickets(),
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => const Divider(height: 1),
+                    itemCount: controller.supportTicketsList.length,
+                    itemBuilder: (context, index) {
+                      final ticket = controller.supportTicketsList[index];
+                      return ListTile(
+                        leading: Text('${index + 1}'),
+                        title: Text(
+                          ticket.issue ?? 'No issue specified',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(ticket.status),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                ticket.status?.toUpperCase() ?? 'UNKNOWN',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.chevron_right),
+                              onPressed: () {
+                                Get.to(
+                                  () => SupportTicketDetailsScreen(),
+                                  arguments: ticket.id,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Get.to(
+                            () => SupportTicketDetailsScreen(),
+                            arguments: ticket.id,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'open':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'closed':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

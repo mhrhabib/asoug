@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // Simulate a delay for the splash screen
       if (storage.read('token') != null) {
         // If the user is already logged in, navigate to the home screen
+        print('token: ${storage.read('token')}');
         Get.off((() => const HomeLandingScreen()));
       } else {
         // If the user is not logged in, navigate to the sign-in screen

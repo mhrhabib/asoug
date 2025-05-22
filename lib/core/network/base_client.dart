@@ -49,6 +49,7 @@ class BaseClient {
   }) async {
     final dio = Dio(await getBaseOptions(additionalHeaders: headers));
     final response = await dio.post(url, queryParameters: queryPayload);
+    _logRequest(url: url, response: response);
     return response;
   }
 
@@ -59,6 +60,7 @@ class BaseClient {
   }) async {
     final dio = Dio(await getBaseOptions(additionalHeaders: headers));
     final response = await dio.put(url, data: payload);
+    _logRequest(url: url, response: response);
     return response;
   }
 
@@ -68,6 +70,7 @@ class BaseClient {
   }) async {
     final dio = Dio(await getBaseOptions(additionalHeaders: headers));
     final response = await dio.delete(url);
+    _logRequest(url: url, response: response);
     return response;
   }
 

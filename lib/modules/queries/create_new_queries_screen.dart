@@ -1,28 +1,38 @@
 import 'dart:io';
+import 'package:asoug/modules/queries/controllers/queries_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'controllers/support_ticket_controller.dart';
+import 'package:path/path.dart' as path;
 
-class CreateTicketScreen extends StatefulWidget {
-  const CreateTicketScreen({super.key});
+class CreateNewQueriesScreen extends StatefulWidget {
+  final String? companyId; // Pass companyId when navigating to this screen
+
+  const CreateNewQueriesScreen({super.key, this.companyId});
 
   @override
-  State<CreateTicketScreen> createState() => _CreateTicketScreenState();
+  State<CreateNewQueriesScreen> createState() => _CreateNewQueriesScreenState();
 }
 
-class _CreateTicketScreenState extends State<CreateTicketScreen> {
-  final SupportTicketController controller = Get.find();
+class _CreateNewQueriesScreenState extends State<CreateNewQueriesScreen> {
+  final QueriesController controller = Get.put(QueriesController());
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _issueController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
+  void initState() {
+    print(widget.companyId);
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _issueController.dispose();
     _descriptionController.dispose();
+
     super.dispose();
   }
 
@@ -35,7 +45,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Create Support Ticket',
+          'Create Ticket',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -68,7 +78,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
               // Description Field
               _buildLabeledTextField(
-                label: 'Description',
+                label: 'Issue Description',
                 hintText: 'Describe your issue in detail',
                 controller: _descriptionController,
                 validator: (value) => value?.isEmpty ?? true ? 'Please enter description' : null,
@@ -76,10 +86,10 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
               ),
               const Gap(24),
 
-              // Attachment Section
-              _buildTitle(title: "Attachment (Optional)"),
-              const Gap(8),
-              _buildFilePicker(context),
+              // License Attachment Section
+              // _buildTitle(title: "Attachment (Optional)"),
+              // const Gap(8),
+              // _buildFilePicker(context),
               const Gap(24),
 
               // Submit Button
@@ -92,7 +102,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                       return const ElevatedButton(
                         onPressed: null,
                         style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.green),
+                          backgroundColor: WidgetStatePropertyAll(Colors.green),
                         ),
                         child: SizedBox(
                           height: 20,
@@ -183,6 +193,9 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
   }
 
   Widget _buildFilePicker(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -236,7 +249,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                           ),
                         )
                       : Text(
-                          controller.attachmentImagePath.value.split('/').last,
+                          path.basename(controller.attachmentImagePath.value),
                           overflow: TextOverflow.ellipsis,
                         ),
                 ),
@@ -249,7 +262,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
           () => controller.attachmentImagePath.value.isEmpty
               ? const SizedBox.shrink()
               : Container(
-                  height: 150,
+                  height: isSmallScreen ? 100 : 150,
                   width: double.infinity,
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
@@ -294,46 +307,32 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     }
   }
 
-  // Add this to the CreateTicketScreen class
-  @override
-  void initState() {
-    super.initState();
-
-    // Check if we're in edit mode
-    final args = Get.arguments as Map<String, dynamic>?;
-    if (args != null && args['isEdit'] == true) {
-      _issueController.text = args['issue'] ?? '';
-      _descriptionController.text = args['description'] ?? '';
-    }
-  }
-
-// Update the _submitTicket method
   void _submitTicket() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final args = Get.arguments as Map<String, dynamic>?;
-      final isEdit = args != null && args['isEdit'] == true;
-      final ticketId = args?['ticketId'] as int?;
+      // Check if companyId is provided
+      // if (widget.companyId == null || widget.companyId!.isEmpty) {
+      //   Get.snackbar(
+      //     'Error',
+      //     'Company ID is required',
+      //     snackPosition: SnackPosition.BOTTOM,
+      //     backgroundColor: Colors.red,
+      //     colorText: Colors.white,
+      //   );
+      //   return;
+      // }
 
-      if (isEdit && ticketId != null) {
-        await controller.updateExistingTicket(
-          ticketId: ticketId,
-          issue: _issueController.text.trim(),
-          description: _descriptionController.text.trim(),
-          attachmentPath: controller.attachmentImagePath.value.isNotEmpty ? controller.attachmentImagePath.value : null,
-        );
-      } else {
-        await controller.createNewTicket(
-          issue: _issueController.text.trim(),
-          description: _descriptionController.text.trim(),
-          attachmentPath: controller.attachmentImagePath.value.isNotEmpty ? controller.attachmentImagePath.value : null,
-        );
-      }
+      await controller.createNewQuery(
+        customerQuery: _issueController.text.trim(),
+        description: _descriptionController.text.trim(),
+        companyId: widget.companyId ?? '1',
+        //filePath: controller.attachmentImagePath.value,
+      );
 
       if (controller.isSuccess.value) {
         Get.back(); // Return to previous screen
         Get.snackbar(
           'Success',
-          isEdit ? 'Ticket updated successfully' : 'Ticket created successfully',
+          'Ticket created successfully',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,

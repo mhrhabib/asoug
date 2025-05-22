@@ -61,4 +61,18 @@ class Urls {
   static const supplierWhyUs = '$baseUrl/why-us';
   static const supplierProductVideo = '$baseUrl/product-video';
   static const supplierFaqs = '$baseUrl/supplier-faqs';
+
+  //queries
+  static const getQueriesUrl = '$baseUrl/customer-queries';
+  static const postQueriesUrl = '$baseUrl/customer-queries/store';
+  static const showQueriesDataUrl = '$baseUrl/customer-queries/show/';
+  static const deleteQueriesDataUrl = '$baseUrl/customer-queries/destroy/';
+  static const updateQueriesDataUrl = '$baseUrl/customer-queries/update/';
+
+  //supports
+  static const getSupportsTicketUrl = '$baseUrl/support-tickets';
+  static const postSupportsTicketUrl = '$baseUrl/support-tickets/store';
+  static const showSupportsTicketUrl = '$baseUrl/support-tickets/show/';
+  static const deleteSupportsTicketUrl = '$baseUrl/support-tickets/destroy/';
+  static const updateSupportsTicketUrl = '$baseUrl/support-tickets/update/';
 }
