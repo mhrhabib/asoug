@@ -1,6 +1,7 @@
 import 'package:asoug/core/network/base_client.dart';
 import 'package:asoug/core/network/urls.dart';
 import '../models/queries_model.dart';
+import '../models/queries_show_model.dart';
 
 class QueriesRepository {
   // Get all queries
@@ -43,14 +44,14 @@ class QueriesRepository {
   }
 
   // Get single query details
-  Future<Query> getQueryDetails(int queryId) async {
+  Future<QueriesShowModel> getQueryDetails(int queryId) async {
     try {
       final response = await BaseClient.get(
         url: '${Urls.showQueriesDataUrl}$queryId',
         headers: {'x-role': 'buyer'},
       );
       if (response.statusCode == 200) {
-        return Query.fromJson(response.data['data']);
+        return QueriesShowModel.fromJson(response.data);
       } else {
         throw Exception('Failed to load query details');
       }

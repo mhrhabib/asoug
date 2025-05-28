@@ -75,4 +75,7 @@ class Urls {
   static const showSupportsTicketUrl = '$baseUrl/support-tickets/show/';
   static const deleteSupportsTicketUrl = '$baseUrl/support-tickets/destroy/';
   static const updateSupportsTicketUrl = '$baseUrl/support-tickets/update/';
+
+  //contact us
+  static const contactUsUrl = '$baseUrl/contact-us';
 }

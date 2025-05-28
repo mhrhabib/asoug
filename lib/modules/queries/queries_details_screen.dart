@@ -74,7 +74,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                         ),
                         const Gap(12),
                         Expanded(
-                          child: Text(': ${query.customerQuery ?? 'N/A'}'),
+                          child: Text(': ${query.data!.customerQuery!.customerQuery ?? 'N/A'}'),
                         ),
                       ],
                     ),
@@ -88,7 +88,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                         ),
                         const Gap(12),
                         Expanded(
-                          child: Text(': ${query.description ?? 'N/A'}'),
+                          child: Text(': ${query.data!.customerQuery!.description ?? 'N/A'}'),
                         ),
                       ],
                     ),
@@ -112,7 +112,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                           'You',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(query.createdAt ?? 'Unknown date'),
+                        Text(query.data!.customerQuery!.createdAt ?? 'Unknown date'),
                       ],
                     ),
                   ],
@@ -129,7 +129,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                     color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(query.description ?? 'No description'),
+                  child: Text(query.data!.customerQuery!.description ?? 'No description'),
                 ),
               ),
               Align(
@@ -138,7 +138,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      query.isSeen == '1' ? 'Seen' : 'Not Seen',
+                      query.data!.customerQuery!.isSeen == '1' ? 'Seen' : 'Not Seen',
                       style: const TextStyle(color: Colors.blue),
                     ),
                     const Icon(
@@ -210,7 +210,7 @@ class QueriesDetailsScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       Get.to(() => CreateNewQueriesScreen(
-                            companyId: query.companyId,
+                            companyId: query.data!.customerQuery!.companyId,
                           ));
                     },
                     child: Text('Create Support Ticket'),

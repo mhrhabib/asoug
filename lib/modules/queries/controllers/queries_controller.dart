@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../models/queries_model.dart';
+import '../models/queries_show_model.dart';
 import '../repo/queries_repo.dart';
 
 class QueriesController extends GetxController {
@@ -11,7 +12,7 @@ class QueriesController extends GetxController {
   final queriesError = ''.obs;
 
   // Single query details
-  final queryDetails = Rxn<Query>();
+  final queryDetails = Rxn<QueriesShowModel>();
   final isLoadingDetails = false.obs;
   final detailsError = ''.obs;
 
