@@ -64,15 +64,17 @@ class CustomCheckboxButton extends StatelessWidget {
           child: (isRightCheck ?? false) ? rightSideCheckbox : leftSideCheckbox,
         ),
       );
-  Widget get leftSideCheckbox => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: checkboxWidget,
-          ),
-          isExpandedText ? Expanded(child: textWidget) : textWidget,
-        ],
+  Widget get leftSideCheckbox => FittedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: checkboxWidget,
+            ),
+            isExpandedText ? Expanded(child: textWidget) : textWidget,
+          ],
+        ),
       );
   Widget get rightSideCheckbox => Row(
         mainAxisAlignment: MainAxisAlignment.start,

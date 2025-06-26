@@ -1,3 +1,5 @@
+import 'package:asoug/core/utils/storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/home_banner_model.dart';
 import '../models/join_our_team_model.dart';
@@ -114,5 +116,63 @@ class ServicesController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+  // lacalization
+  final List locale = [
+    {
+      'name': 'عربي',
+      'locale': const Locale('ar', 'AR'),
+    },
+    {
+      'name': 'English',
+      'locale': const Locale('en', 'US'),
+    },
+  ];
+
+  updateLanguage(Locale locale) {
+    Get.back();
+    LocalSettings().initialize();
+    Get.updateLocale(locale);
+  }
+
+  buildDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (builder) {
+        return AlertDialog(
+          title: Text(
+            'choose_a_language'.tr,
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 14),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    debugPrint(index.toString());
+                    storage.write('local', index);
+
+                    updateLanguage(locale[index]['locale']);
+                  },
+                  child: Text(
+                    locale[index]['name'],
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 14),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider(
+                  color: Colors.blue,
+                );
+              },
+              itemCount: locale.length,
+            ),
+          ),
+        );
+      },
+    );
   }
 }

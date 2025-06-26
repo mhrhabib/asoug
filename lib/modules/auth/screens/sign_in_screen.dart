@@ -30,7 +30,7 @@ class SignInScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 23),
+                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 23),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: InkWell(onTap: () => Get.back(), child: Icon(Icons.arrow_back)),
@@ -59,14 +59,14 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF2F2F7),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: CustomTextFormField(
-                        hintText: 'username_email'.tr,
+                        hintText: 'lbl_email'.tr,
                         controller: controller.email,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -78,7 +78,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 25),
+                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF2F2F7),
@@ -86,7 +86,7 @@ class SignInScreen extends StatelessWidget {
                       ),
                       child: Obx(
                         () => CustomTextFormField(
-                          hintText: "password".tr,
+                          hintText: "lbl_password".tr,
                           obscureText: controller.isVisible.value ? true : false,
                           controller: controller.password,
                           suffix: InkWell(
@@ -109,7 +109,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 27),
+                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Row(
@@ -120,7 +120,7 @@ class SignInScreen extends StatelessWidget {
                           Container(
                             margin: const EdgeInsets.fromLTRB(0, 0.5, 0, 0.5),
                             child: Text(
-                              'remember_password'.tr,
+                              'remember password'.tr,
                               style: GoogleFonts.getFont(
                                 'Inter',
                                 fontWeight: FontWeight.w400,
@@ -159,7 +159,7 @@ class SignInScreen extends StatelessWidget {
                         Get.to(() => ForgotPasswordScreen());
                       },
                       child: Text(
-                        'forget_password'.tr,
+                        'msg_forgot_your_password'.tr,
                         style: GoogleFonts.getFont(
                           'Inter',
                           fontWeight: FontWeight.w400,
@@ -181,7 +181,7 @@ class SignInScreen extends StatelessWidget {
                       onPressed: () {
                         Get.to(() => SignUpScreen());
                       },
-                      child: Text('sign_up'.tr)),
+                      child: Text('lbl_sign_up'.tr)),
                 ],
               ),
             ),

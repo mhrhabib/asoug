@@ -1,0 +1,2 @@
+/Users/mhrhabib39/riyadah_incubator/asoug/android/app/.cxx/RelWithDebInfo/3vh1066m/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/mhrhabib39/riyadah_incubator/asoug/android/app/.cxx/RelWithDebInfo/3vh1066m/armeabi-v7a/CMakeFiles/rebuild_cache.dir

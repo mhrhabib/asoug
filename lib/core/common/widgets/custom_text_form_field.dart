@@ -24,7 +24,7 @@ class CustomTextFormField extends StatelessWidget {
     this.contentPadding,
     this.borderDecoration,
     this.fillColor,
-    this.filled = true,
+    this.filled = false,
     this.validator,
     this.readOnly,
   });
@@ -126,13 +126,17 @@ class CustomTextFormField extends StatelessWidget {
         filled: filled,
         border: borderDecoration ??
             OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
-        enabledBorder: borderDecoration ?? OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        enabledBorder: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              // borderSide: BorderSide.none,
+            ),
         focusedBorder: borderDecoration ??
             OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: Colors.blue.shade300,
                 width: 1,

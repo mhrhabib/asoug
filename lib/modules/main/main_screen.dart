@@ -1,5 +1,6 @@
 import 'package:asoug/modules/cart/cart_screen.dart';
 import 'package:asoug/modules/home/screens/home_screens.dart';
+import 'package:asoug/modules/profile/profile_screen.dart';
 import 'package:asoug/modules/wishList/wish_list_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
     const SearchPage(),
     const CartScreen(),
     const WishListScreen(),
-    const ProfilePage(),
+    const ProfileScreen(),
   ];
 
   @override

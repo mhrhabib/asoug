@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'controller/product_controller.dart';
 import 'models/product_model.dart';
@@ -41,54 +42,69 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'Products',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt, color: Colors.white),
-            onPressed: () => _showFilterDialog(context),
-          ),
-        ],
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Theme.of(context).primaryColor,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.white,
+    ));
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Theme.of(context).primaryColor, // Match app bar color
+        statusBarIconBrightness: Brightness.light, // For Android
+        systemNavigationBarColor: Colors.white, // Optional: set navigation bar color
       ),
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: AlwaysScrollableScrollPhysics(),
-        shrinkWrap: true,
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            sliver: SliverToBoxAdapter(
-              child: _buildSearchBar(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        // extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: const Text(
+            'Products',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_alt, color: Colors.white),
+              onPressed: () => _showFilterDialog(context),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            sliver: SliverToBoxAdapter(
-              child: _buildActiveFiltersChips(),
+          ],
+        ),
+        body: CustomScrollView(
+          controller: _scrollController,
+          physics: AlwaysScrollableScrollPhysics(),
+          shrinkWrap: true,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              sliver: SliverToBoxAdapter(
+                child: _buildSearchBar(),
+              ),
             ),
-          ),
-          const SliverPadding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            sliver: SliverToBoxAdapter(),
-          ),
-          _buildProductGrid(),
-          SliverToBoxAdapter(
-            child: Obx(() {
-              return _controller.isLoading.value
-                  ? const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  : const SizedBox.shrink();
-            }),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              sliver: SliverToBoxAdapter(
+                child: _buildActiveFiltersChips(),
+              ),
+            ),
+            const SliverPadding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              sliver: SliverToBoxAdapter(),
+            ),
+            _buildProductGrid(),
+            SliverToBoxAdapter(
+              child: Obx(() {
+                return _controller.isLoading.value
+                    ? const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : const SizedBox.shrink();
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

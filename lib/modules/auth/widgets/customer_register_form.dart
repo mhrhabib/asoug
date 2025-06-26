@@ -27,7 +27,7 @@ class CustomerRegisterForm extends StatelessWidget {
               ),
               child: CustomTextFormField(
                 controller: authController.name,
-                hintText: 'username'.tr,
+                hintText: 'lbl_username'.tr,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your name';
@@ -46,7 +46,7 @@ class CustomerRegisterForm extends StatelessWidget {
               ),
               child: CustomTextFormField(
                 controller: authController.phone,
-                hintText: 'mobile_number'.tr,
+                hintText: 'lbl_mobile'.tr,
                 textInputType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -69,7 +69,7 @@ class CustomerRegisterForm extends StatelessWidget {
               ),
               child: CustomTextFormField(
                 controller: authController.regEmail,
-                hintText: "email".tr,
+                hintText: "lbl_email".tr,
                 textInputType: TextInputType.emailAddress,
                 suffix: const Icon(Icons.email_outlined),
                 validator: (value) {
@@ -138,12 +138,12 @@ class CustomerRegisterForm extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('already_have_an_account'.tr),
+                    Text('msg_already_have_an'.tr),
                     const Gap(8),
                     InkWell(
                       onTap: () => Get.back(),
                       child: Text(
-                        'sign_in'.tr,
+                        'lbl_sign_in'.tr,
                         style: const TextStyle(
                           decoration: TextDecoration.underline,
                           color: Colors.blue,
@@ -180,7 +180,7 @@ class CustomerRegisterForm extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 25),
         child: CustomTextFormField(
           controller: authController.password1,
-          hintText: "password".tr,
+          hintText: "lbl_password".tr,
           textInputAction: TextInputAction.done,
           textInputType: TextInputType.visiblePassword,
           suffix: InkWell(
@@ -210,7 +210,7 @@ class CustomerRegisterForm extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 25),
         child: CustomTextFormField(
           controller: authController.confirmPassword,
-          hintText: "confirm_password".tr,
+          hintText: "lbl_confirm_password".tr,
           textInputAction: TextInputAction.done,
           textInputType: TextInputType.visiblePassword,
           obscureText: authController.isVisible2.value,

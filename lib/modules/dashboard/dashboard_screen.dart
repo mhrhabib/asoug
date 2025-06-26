@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -24,9 +25,7 @@ class UserDashboardScreen extends StatefulWidget {
 
 class _UserDashboardScreenState extends State<UserDashboardScreen> {
   final profileController = Get.put(ProfileController());
-
   final orderController = Get.put(OrderController());
-
   final orderNameList = [
     'All',
     'confirm',
@@ -85,197 +84,234 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
     },
   ];
 
+  // ... keep your existing variables (orderNameList, menuItems) ...
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenWidth < 360;
 
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // Header with user info
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Theme.of(context).primaryColor, // Use your theme's primary color
+        statusBarIconBrightness: Brightness.light, // For Android
+        statusBarBrightness: Brightness.dark, // For iOS
+      ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          // extendBodyBehindAppBar: true,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  color: Theme.of(context).primaryColor, // Background color for the rounded corners
+                ),
+                Column(
                   children: [
-                    Obx(
-                      () => profileController.profile.value.avatarUrl != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: CachedNetworkImage(
-                                imageUrl: profileController.profile.value.avatarUrl!,
-                                placeholder: (context, url) => const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => const Icon(Icons.error),
-                                imageBuilder: (context, imageProvider) => CircleAvatar(
-                                  radius: isSmallScreen ? 22 : 26,
-                                  backgroundImage: imageProvider,
+                    // App Bar Section
+                    Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                            child: Row(
+                              children: [
+                                Obx(
+                                  () => profileController.profile.value.avatarUrl != null
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.circular(30),
+                                          child: CachedNetworkImage(
+                                            imageUrl: profileController.profile.value.avatarUrl!,
+                                            placeholder: (context, url) => const CircularProgressIndicator(),
+                                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                                            imageBuilder: (context, imageProvider) => CircleAvatar(
+                                              radius: isSmallScreen ? 22 : 26,
+                                              backgroundImage: imageProvider,
+                                            ),
+                                            width: 30 * 2,
+                                            height: 30 * 2,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : CircleAvatar(
+                                          radius: isSmallScreen ? 22 : 26,
+                                          backgroundColor: Colors.grey[200],
+                                          child: Image.asset(
+                                            'assets/image (1).png',
+                                            width: isSmallScreen ? 24 : 28,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                 ),
-                                width: 30 * 2,
-                                height: 30 * 2,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : CircleAvatar(
-                              radius: isSmallScreen ? 22 : 26,
-                              backgroundColor: Colors.grey[200],
-                              child: Image.asset(
-                                'assets/image (1).png',
-                                width: isSmallScreen ? 24 : 28,
-                                fit: BoxFit.cover,
+                                const Gap(12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Welcome,',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 14 : 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Obx(() {
+                                      if (profileController.isLoading.value) {
+                                        return const CircularProgressIndicator();
+                                      } else {
+                                        return Text(
+                                          profileController.profile.value.name ?? 'User',
+                                          style: TextStyle(fontSize: isSmallScreen ? 16 : 18, fontWeight: FontWeight.w700, color: Colors.white),
+                                        );
+                                      }
+                                    }),
+                                  ],
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  icon: SvgPicture.asset(
+                                    'assets/icons/settings.svg',
+                                    width: isSmallScreen ? 20 : 24,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10.0),
+                        ],
+                      ),
+                    ),
+
+                    // Main Content
+                    Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        child: CustomScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          slivers: [
+                            // My Orders section
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'My Order',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 16 : 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Get.to(() => AllOrdersScreen()),
+                                      child: Text(
+                                        'view all orders',
+                                        style: TextStyle(
+                                          fontSize: isSmallScreen ? 12 : 14,
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: Colors.blue,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                    ),
-                    const Gap(12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome,',
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 14 : 16,
-                            color: Colors.grey[600],
-                          ),
+
+                            // Order status tabs
+                            SliverToBoxAdapter(
+                              child: Container(
+                                  height: 40,
+                                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 149, 6, 196),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    itemCount: orderNameList.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      final status = orderNameList[index];
+                                      final isSelected = orderController.selectedStatus.value == status;
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            orderController.selectedStatus.value = status;
+                                          });
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? Colors.white : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            status,
+                                            style: TextStyle(
+                                              color: isSelected ? Colors.purple : Colors.white,
+                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )),
+                            ),
+
+                            const SliverToBoxAdapter(child: Gap(12)),
+
+                            // Order items list
+                            SliverToBoxAdapter(
+                              child: Obx(() {
+                                final filtered = orderController.filteredOrders;
+                                if (orderController.isLoading.value) {
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+                                if (filtered.isEmpty) {
+                                  return const Center(child: Text('No orders found.'));
+                                }
+                                return Column(
+                                  children: List.generate(filtered.length, (index) {
+                                    final order = filtered[index];
+                                    return _buildOrderItem(order);
+                                  }),
+                                );
+                              }),
+                            ),
+
+                            const SliverToBoxAdapter(child: Gap(16)),
+
+                            // Menu grid
+                            SliverToBoxAdapter(
+                              child: _buildMenuGrid(context),
+                            ),
+
+                            const SliverToBoxAdapter(child: Gap(16)),
+                          ],
                         ),
-                        Obx(() {
-                          if (profileController.isLoading.value) {
-                            return const CircularProgressIndicator();
-                          } else {
-                            return Text(
-                              profileController.profile.value.name ?? 'User',
-                              style: TextStyle(
-                                fontSize: isSmallScreen ? 16 : 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            );
-                          }
-                        }),
-                      ],
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/settings.svg',
-                        width: isSmallScreen ? 20 : 24,
                       ),
-                      onPressed: () {},
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-
-            // My Orders section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Order',
-                      style: TextStyle(
-                        fontSize: isSmallScreen ? 16 : 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.to(() => AllOrdersScreen()),
-                      child: Text(
-                        'view all orders',
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 12 : 14,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.blue,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Order status tabs
-            SliverToBoxAdapter(
-              child: Container(
-                  height: 40,
-                  margin: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 149, 6, 196),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    itemCount: orderNameList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      final status = orderNameList[index];
-                      final isSelected = orderController.selectedStatus.value == status;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            orderController.selectedStatus.value = status;
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.white : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            status,
-                            style: TextStyle(
-                              color: isSelected ? Colors.purple : Colors.white,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  )),
-            ),
-
-            const SliverToBoxAdapter(child: Gap(12)),
-
-            // Order items list
-            SliverToBoxAdapter(
-              child: Obx(() {
-                final filtered = orderController.filteredOrders;
-                if (orderController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (filtered.isEmpty) {
-                  return const Center(child: Text('No orders found.'));
-                }
-                return Column(
-                  children: List.generate(filtered.length, (index) {
-                    final order = filtered[index];
-                    return _buildOrderItem(order);
-                  }),
-                );
-              }),
-            ),
-
-            const SliverToBoxAdapter(child: Gap(16)),
-
-            // Menu grid
-            SliverToBoxAdapter(
-              child: _buildMenuGrid(context),
-            ),
-
-            const SliverToBoxAdapter(child: Gap(16)),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  // Keep your existing _buildOrderItem and _buildMenuGrid methods
   Widget _buildOrderItem(Orders order) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
