@@ -289,7 +289,7 @@ class _CartScreenState extends State<CartScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'SAR ${item.price?.toStringAsFixed(2) ?? '0.00'}',
+                                item.maxPrice?.replaceAll('SAR', '').replaceAll(',', '').trim() ?? '0.00',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

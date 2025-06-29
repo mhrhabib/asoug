@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProductItem(Product product) {
-    final price = double.tryParse(product.minPrice?.toString() ?? '0') ?? 0;
+    final price = double.tryParse(product.maxPrice!) ?? 0;
     final hasDiscount = int.parse(product.hasBulkDiscount!) == 1;
 
     return GestureDetector(
@@ -264,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     product.featuredImage ?? '',
                     height: 120,
                     width: double.infinity,
-                    fit: BoxFit.fitWidth,
+                    fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 120,
                       color: Colors.grey[200],
@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '\$${price.toStringAsFixed(2)}',
+                    '${product.maxPrice}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

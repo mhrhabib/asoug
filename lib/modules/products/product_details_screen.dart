@@ -27,6 +27,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     Future.microtask(() => productController.fetchProductDetails(widget.productSlug));
+    Future.microtask(() => productController.fetchRelatedProducts(widget.productSlug));
   }
 
   @override
@@ -81,7 +82,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
         }
 
         final price = double.tryParse(product.minPrice?.toString() ?? '0') ?? 0;
-        final hasDiscount = product.hasBulkDiscount == 1;
+        final hasDiscount = product.hasBulkDiscount == '1';
         final maxPrice = double.tryParse(product.maxPrice?.replaceAll('৳', '').replaceAll(',', '').trim() ?? '0') ?? 0;
 
         return Column(
@@ -122,7 +123,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                           Row(
                             children: [
                               Text(
-                                '৳ ${price.toStringAsFixed(2)}',
+                                '৳ ${maxPrice.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -143,7 +144,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.red.withOpacity(0.2),
+                                    color: Colors.red.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Text(
@@ -274,7 +275,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                                           ),
                                           const SizedBox(height: 16),
                                           Text(
-                                            product.isShippable == 1 ? 'This product is shippable' : 'This product is not shippable',
+                                            product.isShippable == true ? 'This product is shippable' : 'This product is not shippable',
                                             style: const TextStyle(fontSize: 16),
                                           ),
                                           if (product.shippingMethod != null)
@@ -360,7 +361,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> with Single
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            '৳ ${double.tryParse(relatedProduct.minPrice?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}',
+                                            '৳ ${relatedProduct.maxPrice?.replaceAll('৳', '').replaceAll(',', '').trim() ?? '0'}',
                                             style: TextStyle(
                                               color: Theme.of(context).primaryColor,
                                               fontWeight: FontWeight.bold,

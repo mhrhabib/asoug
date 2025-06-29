@@ -113,7 +113,7 @@ class ProductRepository {
   Future<dynamic> getRelatedProducts(String productId) async {
     try {
       final response = await BaseClient.get(
-        url: '${network.Urls.getProductsUrl}/$productId/related',
+        url: network.Urls.getProductsUrl,
       );
       return ProductModel.fromJson(response);
     } on dio.DioException catch (e) {

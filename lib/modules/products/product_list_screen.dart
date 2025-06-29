@@ -20,7 +20,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void initState() {
     super.initState();
 
-    _controller.fetchProducts();
+    Future.microtask(() {
+      // Ensure the controller is initialized before fetching products
+      _controller.featuredProducts();
+    });
+
     _scrollController.addListener(_scrollListener);
   }
 
@@ -260,7 +264,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildProductItem(Product product) {
-    final price = double.tryParse(product.minPrice?.toString() ?? '0') ?? 0;
+    final price = product.maxPrice!;
     final hasDiscount = product.hasBulkDiscount == 1;
 
     return GestureDetector(
@@ -286,7 +290,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     product.featuredImage ?? '',
                     height: 120,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) => Container(
                       height: 120,
                       color: Colors.grey[200],
@@ -343,22 +347,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '\$${price.toStringAsFixed(2)}',
+                    '${price}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: Colors.blue,
                     ),
                   ),
-                  if (hasDiscount)
-                    Text(
-                      '\$${(price * 1.15).toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[400],
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
+                  // if (hasDiscount)
+                  //   Text(
+                  //     '\$${(price! * 1.15).toStringAsFixed(2)}',
+                  //     style: TextStyle(
+                  //       fontSize: 12,
+                  //       color: Colors.grey[400],
+                  //       decoration: TextDecoration.lineThrough,
+                  //     ),
+                  //   ),
                 ],
               ),
             ),
