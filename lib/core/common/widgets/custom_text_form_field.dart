@@ -30,49 +30,27 @@ class CustomTextFormField extends StatelessWidget {
   });
 
   final Alignment? alignment;
-
   final double? width;
-
   final TextEditingController? scrollPadding;
-
   final TextEditingController? controller;
-
   final FocusNode? focusNode;
-
   final bool? autofocus;
-
   final TextStyle? textStyle;
-
   final bool? obscureText;
-
   final TextInputAction? textInputAction;
-
   final TextInputType? textInputType;
-
   final int? maxLines;
-
   final String? hintText;
-
   final TextStyle? hintStyle;
-
   final Widget? prefix;
-
   final BoxConstraints? prefixConstraints;
-
   final Widget? suffix;
-
   final BoxConstraints? suffixConstraints;
-
   final EdgeInsets? contentPadding;
-
   final InputBorder? borderDecoration;
-
   final Color? fillColor;
-
   final bool? filled;
-
   final bool? readOnly;
-
   final FormFieldValidator<String>? validator;
 
   @override
@@ -91,7 +69,6 @@ class CustomTextFormField extends StatelessWidget {
           scrollPadding: EdgeInsets.only(bottom: MediaQuery.of(Get.context!).viewInsets.bottom),
           controller: controller,
           focusNode: focusNode ?? FocusNode(),
-          //autofocus: autofocus!,
           style: textStyle ?? CustomTextStyle.bodyLargeff,
           obscureText: obscureText!,
           textInputAction: textInputAction,
@@ -111,35 +88,90 @@ class CustomTextFormField extends StatelessWidget {
 
   InputDecoration get decoration => InputDecoration(
         hintText: hintText ?? "",
-        hintStyle: hintStyle ?? CustomTextStyle.bodyLargeff,
-        prefixIcon: prefix,
-        prefixIconConstraints: prefixConstraints,
-        suffixIcon: suffix,
-        suffixIconConstraints: suffixConstraints,
+        hintStyle: hintStyle ??
+            CustomTextStyle.bodyLargeff.copyWith(
+              color: Colors.grey.shade600,
+            ),
+        prefixIcon: prefix != null
+            ? Padding(
+                padding: const EdgeInsets.only(left: 12, right: 8),
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: Colors.grey.shade600,
+                    size: 20,
+                  ),
+                  child: prefix!,
+                ),
+              )
+            : null,
+        prefixIconConstraints: prefixConstraints ??
+            const BoxConstraints(
+              minWidth: 24,
+              minHeight: 24,
+            ),
+        suffixIcon: suffix != null
+            ? Padding(
+                padding: const EdgeInsets.only(right: 12, left: 8),
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: Colors.grey.shade600,
+                    size: 20,
+                  ),
+                  child: suffix!,
+                ),
+              )
+            : null,
+        suffixIconConstraints: suffixConstraints ??
+            const BoxConstraints(
+              minWidth: 24,
+              minHeight: 24,
+            ),
         isDense: true,
         contentPadding: contentPadding ??
-            EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 14,
+            const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
             ),
-        fillColor: fillColor,
-        filled: filled,
+        fillColor: fillColor ?? Colors.white,
+        filled: filled ?? true,
         border: borderDecoration ??
             OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Get.theme.colorScheme.primary,
+                width: 1.5,
+              ),
             ),
         enabledBorder: borderDecoration ??
             OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              // borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Get.theme.colorScheme.primary,
+                width: 1.5,
+              ),
             ),
         focusedBorder: borderDecoration ??
             OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Colors.blue.shade300,
-                width: 1,
+                color: Colors.green.shade300,
+                width: 1.5,
+              ),
+            ),
+        errorBorder: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Get.theme.colorScheme.error,
+                width: 1.0,
+              ),
+            ),
+        focusedErrorBorder: borderDecoration ??
+            OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Get.theme.colorScheme.error,
+                width: 1.5,
               ),
             ),
       );
@@ -171,6 +203,6 @@ extension TextFormFieldStyleHelper on CustomTextFormField {
 class CustomTextStyle {
   static get bodyLargeff => Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
         color: const Color(0XFF333333),
-        fontWeight: FontWeight.w300,
+        fontWeight: FontWeight.w400,
       );
 }

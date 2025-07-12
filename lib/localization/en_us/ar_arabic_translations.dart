@@ -1,5 +1,8 @@
 final Map<String, String> arAr = {
   'choose_a_language': "اختر لغة",
+  'lbl_login_title': "تسجيل الدخول إلى منصة Asoug",
+  'lbl_remember_password': "تذكر كلمة المرور",
+  'lbl_welcome_to_asoug_platform': "مرحبًا بك في منصة Asoug",
 
   //foreign ownership
   'lbl_nationality': 'الجنسية',

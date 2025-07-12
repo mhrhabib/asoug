@@ -1,5 +1,8 @@
 final Map<String, String> enUs = {
   'choose_a_language': "Choose a language",
+  'lbl_login_title': "Login to Asoug Platform",
+  'lbl_remember_password': "Remember Password",
+  'lbl_welcome_to_asoug_platform': "Welcome to Asoug Platform",
 
   //foreign ownership
   'lbl_nationality': 'Nationality',

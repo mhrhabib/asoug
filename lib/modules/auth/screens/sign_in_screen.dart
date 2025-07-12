@@ -1,190 +1,431 @@
-import 'package:asoug/modules/auth/forgotPassword/forgot_password_screen.dart';
-import 'package:asoug/modules/auth/screens/sign_up_screen.dart';
+import 'package:asoug/core/common/widgets/custom_image_view.dart';
+import 'package:asoug/core/utils/image_constant.dart';
+import 'package:asoug/core/utils/storage.dart';
+import 'package:asoug/modules/home/controllers/service_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/common/widgets/custom_elevated_button.dart';
-import '../../../core/common/widgets/custom_image_view.dart';
-import '../../../core/common/widgets/custom_text_form_field.dart';
-import '../../../core/utils/image_constant.dart';
+
 import '../controller/auth_controller.dart';
+import '../forgotPassword/forgot_password_screen.dart';
+import 'sign_up_screen.dart';
 
 class SignInScreen extends StatelessWidget {
   SignInScreen({super.key});
 
   final AuthController controller = Get.put(AuthController());
+  final ServicesController servicesController = Get.put(ServicesController());
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 56),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 23),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: InkWell(onTap: () => Get.back(), child: Icon(Icons.arrow_back)),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-                    child: SizedBox(
-                      width: 150,
-                      height: 150,
-                      child: CustomImageView(
-                        imagePath: ImageConstant.logo,
+                  // Header with back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildBackButton(context),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Get.theme.colorScheme.primary,
+                          side: BorderSide(
+                            color: Get.theme.colorScheme.primary,
+                            width: 0.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          isLocaleEng ? 'English' : 'عربي',
+                          style: TextStyle(
+                            color: Get.theme.colorScheme.primary,
+                            fontSize: 16,
+                          ),
+                        ),
+                        onPressed: () => servicesController.buildDialog(context),
                       ),
-                    ),
+                    ],
                   ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0.1, 35),
+                  const Gap(12),
+
+                  // Logo
+                  _buildLogo(context),
+                  const Gap(16),
+
+                  // Title
+                  _buildTitle(context),
+                  const Gap(16),
+
+                  // Form Fields
+                  _buildEmailField(context),
+                  const Gap(16),
+                  _buildPasswordField(context),
+                  const Gap(8),
+
+                  // Remember me & Forgot password
+                  _buildRememberForgotRow(context),
+                  const Gap(8),
+
+                  // Login Button
+                  _buildLoginButton(context),
+                  const Gap(16),
+
+                  TextButton(
+                    onPressed: () => Get.to(() => ForgotPasswordScreen()),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                    ),
                     child: Text(
-                      'Login into Asoug Platform'.tr,
-                      style: GoogleFonts.getFont(
-                        'Inter',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24,
-                        color: const Color(0xFF390056),
+                      'Forgot Password?',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF2F2F7),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: CustomTextFormField(
-                        hintText: 'lbl_email'.tr,
-                        controller: controller.email,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "username_empty_error".tr;
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF2F2F7),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Obx(
-                        () => CustomTextFormField(
-                          hintText: "lbl_password".tr,
-                          obscureText: controller.isVisible.value ? true : false,
-                          controller: controller.password,
-                          suffix: InkWell(
-                            onTap: () {
-                              controller.toggleVisibility();
-                              print(controller.isVisible.value);
-                            },
-                            child: Icon(
-                              controller.isVisible.value ? Icons.visibility_off_outlined : Icons.visibility,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "password_empty_error".tr;
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Checkbox(value: true, onChanged: (val) {}),
-                          Container(
-                            margin: const EdgeInsets.fromLTRB(0, 0.5, 0, 0.5),
-                            child: Text(
-                              'remember password'.tr,
-                              style: GoogleFonts.getFont(
-                                'Inter',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: const Color(0xFF2A2424),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Obx(
-                    () => CustomElevatedButton(
-                      buttonStyle: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll<Color>(Theme.of(context).primaryColor),
-                        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        )),
-                      ),
-                      text: controller.isLoading.value ? 'loading.....'.tr : 'login'.tr,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          controller.login();
-                        }
-                      },
-                      buttonTextStyle: const TextStyle(color: Colors.white),
-                      width: MediaQuery.of(context).size.width * .80,
-                    ),
-                  ),
-                  Gap(12),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-                    child: InkWell(
-                      onTap: () {
-                        Get.to(() => ForgotPasswordScreen());
-                      },
-                      child: Text(
-                        'msg_forgot_your_password'.tr,
-                        style: GoogleFonts.getFont(
-                          'Inter',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
-                          color: const Color(0xFF2A2424),
-                          decorationColor: const Color(0xFF2A2424),
-                        ),
-                      ),
-                    ),
-                  ),
-                  OutlinedButton(
-                      style: ButtonStyle(
-                        minimumSize: WidgetStatePropertyAll<Size>(Size(MediaQuery.of(context).size.width * .80, 55)),
-                        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        )),
-                      ),
-                      onPressed: () {
-                        Get.to(() => SignUpScreen());
-                      },
-                      child: Text('lbl_sign_up'.tr)),
+
+                  // Divider
+                  _buildOrDivider(context),
+                  const Gap(16),
+
+                  // Sign Up Button
+                  _buildSignUpButton(context),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    return FloatingActionButton(
+      heroTag: 'backButton',
+      onPressed: () => Get.back(),
+      elevation: 0,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      mini: true,
+      child: Icon(
+        Icons.arrow_back_rounded,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+  }
+
+  Widget _buildLogo(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: CircleAvatar(
+        radius: 60,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: CustomImageView(
+            imagePath: ImageConstant.logo,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'Welcome Back',
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const Gap(8),
+        Text(
+          'Sign in to continue',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Email Address',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        ),
+        const Gap(8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller.email,
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            decoration: InputDecoration(
+              hintText: 'your@email.com',
+              hintStyle: GoogleFonts.poppins(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              ),
+              prefixIcon: Icon(
+                Icons.email_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) return "Please enter your email";
+              if (!GetUtils.isEmail(value)) return "Please enter a valid email";
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Password',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+          ),
+        ),
+        const Gap(8),
+        Obx(() => Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextFormField(
+                controller: controller.password,
+                obscureText: !controller.isVisible.value,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: '••••••••',
+                  hintStyle: GoogleFonts.poppins(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                    letterSpacing: 2,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.lock_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      controller.isVisible.value ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                    onPressed: controller.toggleVisibility,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) return "Please enter your password";
+                  if (value.length < 6) return "Password must be at least 6 characters";
+                  return null;
+                },
+              ),
+            )),
+      ],
+    );
+  }
+
+  Widget _buildRememberForgotRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Transform.scale(
+              scale: 0.9,
+              child: Checkbox(
+                value: true,
+                onChanged: (val) {},
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                ),
+                activeColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const Gap(4),
+            Text(
+              'Remember me',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton(BuildContext context) {
+    return Obx(() => SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () {
+                    if (_formKey.currentState!.validate()) {
+                      controller.login();
+                    }
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ),
+            child: controller.isLoading.value
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    'Sign In',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ));
+  }
+
+  Widget _buildOrDivider(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+            thickness: 1,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'OR',
+            style: GoogleFonts.poppins(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+            thickness: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignUpButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton(
+        onPressed: () => Get.to(() => SignUpScreen()),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Text(
+          'Create New Account',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

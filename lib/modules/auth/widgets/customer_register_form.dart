@@ -18,23 +18,32 @@ class CustomerRegisterForm extends StatelessWidget {
       key: _formKey,
       child: Column(
         children: [
+          // In your CustomerRegisterForm, just wrap the CustomTextFormField with a Container
+// that has the same styling as before, but now the fields will look more professional
+
           Container(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2F2F7),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: CustomTextFormField(
-                controller: authController.name,
-                hintText: 'lbl_username'.tr,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: CustomTextFormField(
+              controller: authController.name,
+              hintText: 'lbl_username'.tr,
+              fillColor: Colors.white,
+              prefix: const Icon(Icons.person_outline),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your name';
+                }
+                return null;
+              },
             ),
           ),
           Container(
@@ -46,6 +55,7 @@ class CustomerRegisterForm extends StatelessWidget {
               ),
               child: CustomTextFormField(
                 controller: authController.phone,
+                fillColor: Colors.white,
                 hintText: 'lbl_mobile'.tr,
                 textInputType: TextInputType.phone,
                 validator: (value) {
