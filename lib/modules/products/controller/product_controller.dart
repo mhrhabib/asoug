@@ -24,9 +24,17 @@ class ProductController extends GetxController {
   RxString? selectedBrand = ''.obs;
   RxList<int> selectedBrandIds = <int>[].obs;
   RxDouble minPrice = 0.0.obs;
-  RxDouble maxPrice = 0.0.obs;
+  RxDouble maxPrice = 100000.0.obs;
   RxDouble minRating = 0.0.obs;
   RxString sortBy = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Initial fetch of products
+    fetchProducts();
+    fetchFeaturedProducts();
+  }
 
   Future<void> fetchProducts({bool loadMore = false}) async {
     try {
@@ -159,7 +167,7 @@ class ProductController extends GetxController {
     selectedBrand?.value = '';
     selectedBrandIds.clear();
     minPrice.value = 0.0;
-    maxPrice.value = 1000.0;
+    maxPrice.value = 100000.0;
     minRating.value = 0.0;
     sortBy.value = 'name-asc';
     perPage.value = 10;

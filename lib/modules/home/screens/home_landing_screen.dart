@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:asoug/core/utils/storage.dart';
+import 'package:asoug/modules/auth/screens/sign_in_screen.dart';
+import 'package:asoug/modules/auth/screens/sign_up_screen.dart';
 import 'package:asoug/modules/home/models/media_center_model.dart';
 import 'package:asoug/modules/home/widgets/home_screen_drawer.dart';
+import 'package:asoug/modules/products/product_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -250,7 +254,10 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
                                       ),
                                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      // Handle shop now action
+                                      Get.to(() => ProductListScreen());
+                                    },
                                     child: const Text('Shop Now'),
                                   ),
                                 ),
@@ -264,7 +271,10 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
                                       ),
                                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      // Handle start selling action
+                                      Get.to(() => storage.read('token') != null ? SignInScreen() : SignUpScreen());
+                                    },
                                     child: const Text(
                                       'Start Selling',
                                       style: TextStyle(color: Colors.black),
@@ -371,6 +381,7 @@ class _HomeLandingScreenState extends State<HomeLandingScreen> {
                           ),
                           onPressed: () {
                             // Handle apply now action
+                            Get.to(() => SignUpScreen());
                           },
                           child: const Text(
                             'Apply Now',

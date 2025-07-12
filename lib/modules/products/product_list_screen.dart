@@ -133,7 +133,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   Widget _buildActiveFiltersChips() {
     return Obx(() {
-      final hasFilters = _controller.selectedCategories.isNotEmpty || _controller.selectedBrand?.value.isNotEmpty == true || _controller.minPrice.value > 0 || _controller.maxPrice.value < 1000 || _controller.minRating.value > 0;
+      final hasFilters = _controller.selectedCategories.isNotEmpty ||
+          _controller.selectedBrand?.value.isNotEmpty == true ||
+          (_controller.minPrice.value > 0 || _controller.maxPrice.value < 1000) || // Only if different from default
+          _controller.minRating.value > 0;
 
       if (!hasFilters) return const SizedBox();
 
@@ -406,7 +409,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         _controller.maxPrice.value,
                       ),
                       min: 0,
-                      max: 1000,
+                      max: 100000,
                       divisions: 10,
                       labels: RangeLabels(
                         '\$${_controller.minPrice.value.toInt()}',

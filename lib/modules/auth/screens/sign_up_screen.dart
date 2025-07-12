@@ -22,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     'Both',
   ];
 
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
